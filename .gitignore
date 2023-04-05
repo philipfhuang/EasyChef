@@ -1,0 +1,5 @@
+.idea
+__pycache__
+easychef/db.sqlite3
+easychef/uploads/avatars/*.*
+easychef/uploads/recipes/*.*
