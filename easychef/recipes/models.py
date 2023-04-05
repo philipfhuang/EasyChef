@@ -33,7 +33,7 @@ class Step(models.Model):
 class StepImage(models.Model):
     step = models.ForeignKey('Step', on_delete=models.CASCADE,
                              related_name='images')
-    image = models.ImageField(upload_to='recipes/')
+    image = models.ImageField(upload_to='recipes/images/')
 
     def __str__(self):
         return f'{self.step} - {self.image}'
@@ -42,7 +42,7 @@ class StepImage(models.Model):
 class StepVideo(models.Model):
     step = models.ForeignKey('Step', on_delete=models.CASCADE,
                              related_name='videos')
-    video = models.FileField(upload_to='recipes/')
+    video = models.FileField(upload_to='recipes/videos/')
     validators = [FileExtensionValidator(allowed_extensions=['MOV','avi','mp4','webm','mkv'])]
 
     def __str__(self):
