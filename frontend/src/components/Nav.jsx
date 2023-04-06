@@ -1,37 +1,71 @@
-import {Nav, Dropdown, Avatar, Input} from '@douyinfe/semi-ui';
-import {IconSemiLogo, IconSearch} from '@douyinfe/semi-icons';
+import {Link, Outlet, useNavigate} from "react-router-dom";
+import * as React from "react";
+import {Nav, Button} from '@douyinfe/semi-ui';
+import {IconSemiLogo, IconBriefStroked} from '@douyinfe/semi-icons';
+
+import Search from "./Search";
+import UserInfo from "./UserInfo";
+import UserContext, {useUserContext} from "../contexts/UserContext";
+import {useContext} from "react";
 
 export const MyNav = () => {
+    let navigate = useNavigate();
+    const {user, setUser} = useContext(UserContext);
+
+    const RouterChange = () => {
+        if (!user) {
+            navigate(`/login`)
+            return
+        }
+        navigate("/recipe/")
+    }
+
     return (
         <>
-            <div style={{width: '100%'}}>
+            <div style={{height:59, backgroundColor:"#000"}}>
                 <Nav
+                    renderWrapper={({itemElement, isSubNav, isInSubNav, props}) => {
+                        const routerMap = {
+                            home: "/",
+                            explore: "/explore"
+                        };
+                        return (
+                            <Link
+                                style={{textDecoration: "none"}}
+                                to={routerMap[props.itemKey]}
+                            >
+                                {itemElement}
+                            </Link>
+                        );
+                    }}
+                    style={{width: '100%', position: 'fixed', zIndex: 1000}}
                     mode={'horizontal'}
                     items={[
                         {itemKey: 'home', text: 'Home'},
                         {itemKey: 'explore', text: 'Explore'},
-                        <Input prefix={<IconSearch/>} placeholder="Search"></Input>,
+                        {itemKey: 'search', text: <Search/>, style: {paddingTop: '2px', paddingBottom: '0'}},
                     ]}
-                    onSelect={key => console.log(key)}
+                    // onSelect={key => console.log(key)}
                     header={{
                         logo: <IconSemiLogo style={{height: '36px', fontSize: 36}}/>,
                         text: 'Easychef'
                     }}
                     footer={
-                        <Dropdown
-                            position={'bottomRight'}
-                            render={
-                                <Dropdown.Menu>
-                                    <Dropdown.Item>详情</Dropdown.Item>
-                                    <Dropdown.Item>退出</Dropdown.Item>
-                                </Dropdown.Menu>
-                            }>
-                            <Avatar size="small" color='light-blue' style={{ margin: 4 }}>BD</Avatar>
-                            <span>Bytedancer</span>
-                        </Dropdown>
+                        <UserContext.Provider value={useUserContext()}>
+                            <UserInfo/>
+                            <Button theme='solid'
+                                    type='warning'
+                                    icon={<IconBriefStroked/>}
+                                    style={{marginLeft: 20, borderRadius:5, backgroundColor:"#976332"}}
+                                    onClick={RouterChange}
+                            >
+                                New Recipe
+                            </Button>
+                        </UserContext.Provider>
                     }
                 />
             </div>
+            <Outlet/>
         </>
     )
 }
