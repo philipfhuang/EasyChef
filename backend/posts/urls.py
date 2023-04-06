@@ -36,7 +36,7 @@ urlpatterns = [
     path('recipe/', RecipeCreateView.as_view()),
     path('recipes/', RecipeListView.as_view()),
     path('recipe/<int:rid>/', RecipeOneView.as_view()),
-    path('recipeUpdate/<int:rid>/', RecipeUpdateView.as_view()),
+    path('recipeUpdate/<int:pk>/', RecipeUpdateView.as_view()),
     path('deleteRecipe/', RecipeDeleteView.as_view()),
 
     path('step/', StepCreateView.as_view()),  # you can create it through create recipe
