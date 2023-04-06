@@ -14,6 +14,16 @@ export const Login = () => {
     const loginValidate = (values) => {
         let errors = {};
 
+        if (!values.username) {
+            errors.username = "Username is required";
+        }
+        if (!values.password) {
+            errors.password = "Password is required";
+        }
+        if (Object.keys(errors).length > 0) {
+            return errors;
+        }
+
         var form = new FormData();
         form.append("username", values.username);
         form.append("password", values.password);
@@ -50,8 +60,8 @@ export const Login = () => {
         <div style={{width: 300, margin: "0 auto", marginTop: 100}}>
             <img src={logo} alt="logo" style={{width: "100%"}}/>
             <Form style={{marginTop: 10}} validateFields={values => loginValidate(values)} onSubmit={loginSuccess}>
-                <Form.Input field='username' label='Username' placeholder='Username' required/>
-                <Form.Input field='password' label='Password' placeholder='Password' mode='password' required/>
+                <Form.Input field='username' label='Username' placeholder='Username'/>
+                <Form.Input field='password' label='Password' placeholder='Password' mode='password'/>
                 <div style={{display: "flex", justifyContent: "center", marginTop: 10}}>
                     <Button htmlType="submit" theme="solid"
                             style={{width: 100, backgroundColor: "#976332"}}>Login</Button>
