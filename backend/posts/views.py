@@ -1,5 +1,5 @@
 from recipes.models import Diet, Recipe, Ingredient, IngredientQuantity, \
-    Cuisine, RecipeCuisine, RecipeDiet, Step, Unit
+    Cuisine, RecipeCuisine, RecipeDiet, Step, StepImage, Unit
 from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView, \
     UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +8,7 @@ from posts.serializers import DietSerializer, RecipeCuisineSerializer, \
     RecipeDietSerializer, RecipeSerializer, \
     CuisineSerializer, \
     IngredientSerializer, IngredientQuantitySerializer, \
-    StepSerializer, UnitSerializer
+    StepImageSerializer, StepSerializer, StepVideoSerializer, UnitSerializer
 
 
 class CuisineCreateView(CreateAPIView):
@@ -151,16 +151,35 @@ class IngredientQuantityUpdateView(UpdateAPIView):
         return IngredientQuantity.objects.all()
 
 
+class StepImageCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StepImageSerializer
+
+
+class StepImageDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StepImageSerializer
+
+    def get_queryset(self):
+        return StepImage.objects.all()
+
+
+class StepVideoCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StepVideoSerializer
+
+
+class StepVideoDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StepVideoSerializer
+
+    def get_queryset(self):
+        return StepImage.objects.all()
+
+
 class StepCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StepSerializer
-
-
-class StepListView(ListAPIView):
-    serializer_class = StepSerializer
-
-    def get_queryset(self):
-        return Step.objects.filter(recipe=self.kwargs.get('rid'))
 
 
 class StepUpdateView(UpdateAPIView):
