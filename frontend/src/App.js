@@ -5,6 +5,7 @@ import MyNav from './components/Nav';
 import Search from "./components/Search";
 import Login from "./components/Login";
 import UserContext, {useUserContext} from "./contexts/UserContext";
+import Recipe from "./components/Recipe";
 
 function App() {
     const login = (
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/" element={<MyNav/>}>
                     <Route path="/explore" element={<Search/>}/>
                     <Route path="/login" element={login}/>
+                    <Route path="/recipe" element={<Recipe/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>
