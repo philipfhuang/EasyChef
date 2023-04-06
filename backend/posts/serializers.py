@@ -13,15 +13,6 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class IngredientQuantitySerializer(serializers.ModelSerializer):
-    ingredient = IngredientSerializer(read_only=True)
-    unit = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = IngredientQuantity
-        fields = ('id', 'ingredient', 'quantity', 'unit', 'recipe')
-
-
 class StepImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = StepImage
@@ -60,6 +51,15 @@ class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
         fields = ('id', 'name')
+
+
+class IngredientQuantitySerializer(serializers.ModelSerializer):
+    ingredient = IngredientSerializer(read_only=True)
+    unit = UnitSerializer(read_only=True)
+
+    class Meta:
+        model = IngredientQuantity
+        fields = ('id', 'ingredient', 'quantity', 'unit', 'recipe')
 
 
 class RecipeDietSerializer(serializers.ModelSerializer):
