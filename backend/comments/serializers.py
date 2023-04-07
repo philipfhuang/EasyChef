@@ -1,11 +1,14 @@
 from rest_framework import serializers
-from .models import Comment
+from .models import Comment, CommentImage, CommentVideo
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    images = serializers.ImageField(source='images.image', read_only=True, many=True)
+    videos = serializers.FileField(source='videos.video', read_only=True, many=True)
+
     class Meta:
         model = Comment
-        fields = ('id', 'userid', 'recipeid', 'content', 'rating')
+        fields = ('id', 'userid', 'recipeid', 'content', 'rating', 'images', 'videos')
 
     def create(self, validated_data):
         return Comment.objects.create(
@@ -18,10 +21,11 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CommentImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Comment
+        model = CommentImage
         fields = ('id', 'image')
 
-    def create(self, validated_data):
-        return Comment.objects.create(
-            image=validated_data['image']
-        )
+
+class CommentVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentVideo
+        fields = ('id', 'video')

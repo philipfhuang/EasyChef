@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import CuisineCreateView, CuisineListView, DietCreateView, \
     DietListView, DietOneView, IngredientCreateView, IngredientListView, \
-    RecipeCuisineCreateView, RecipeCuisineDeleteView, RecipeDeleteView, \
+    IngredientQuantityDeleteView, RecipeCuisineCreateView, \
+    RecipeCuisineDeleteView, RecipeDeleteView, \
     RecipeDietCreateView, RecipeUpdateView, StepCreateView, StepDeleteView, \
     StepImageCreateView, StepImageDeleteView, StepUpdateView, \
     StepVideoCreateView, StepVideoDeleteView, UnitCreateView, \
@@ -30,26 +31,27 @@ urlpatterns = [
     path('ingredientQuantity/', IngredientQuantityCreateView.as_view()),  # you can create it through create recipe
     path('ingredientQuantitys/', IngredientQuantityListView.as_view()),
     path('ingredientQuantity/<int:iqid>/', IngredientQuantityOneView.as_view()),
-    path('ingredientQuantityUpdate/<int:pk>/',
-         IngredientQuantityUpdateView.as_view()),
+    path('ingredientQuantityUpdate/', IngredientQuantityUpdateView.as_view()),
+    path('ingredientQuantityDelete/', IngredientQuantityDeleteView.as_view()),
 
     path('recipe/', RecipeCreateView.as_view()),
     path('recipes/', RecipeListView.as_view()),
     path('recipe/<int:rid>/', RecipeOneView.as_view()),
-    path('recipeUpdate/<int:pk>/', RecipeUpdateView.as_view()),
+    path('recipeUpdate/', RecipeUpdateView.as_view()),
     path('deleteRecipe/', RecipeDeleteView.as_view()),
 
     path('step/', StepCreateView.as_view()),  # you can create it through create recipe
-    path('stepUpdate/<int:pk>/', StepUpdateView.as_view()),
-    path('stepDelete/<int:pk>/', StepDeleteView.as_view()),
+    path('stepUpdate/', StepUpdateView.as_view()),
+    path('stepDelete/', StepDeleteView.as_view()),
 
     path('stepImage/', StepImageCreateView.as_view()),
     path('stepImageDelete/', StepImageDeleteView.as_view()),
     path('stepVideo/', StepVideoCreateView.as_view()),
     path('stepVideoDelete/', StepVideoDeleteView.as_view()),
 
-    path('addCuisine/', RecipeCuisineCreateView.as_view()),
-    path('deleteCuisine/<int:rcid>/', RecipeCuisineDeleteView.as_view()),
-    path('addDiet/', RecipeDietCreateView.as_view()),
-    path('deleteDiet/<int:rdid>/', RecipeDietCreateView.as_view()),
+    path('recipeCuisine/', RecipeCuisineCreateView.as_view()),
+    path('recipeCuisineDelete/', RecipeCuisineDeleteView.as_view()),
+
+    path('recipeDiet/', RecipeDietCreateView.as_view()),
+    path('recipeDietDelete/', RecipeDietCreateView.as_view()),
 ]

@@ -18,3 +18,12 @@ class CommentImage(models.Model):
 
     def __str__(self):
         return f'{self.comment} - {self.image}'
+
+
+class CommentVideo(models.Model):
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE,
+                               related_name='videos')
+    video = models.FileField(upload_to='comments/')
+
+    def __str__(self):
+        return f'{self.comment} - {self.video}'

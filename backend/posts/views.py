@@ -1,14 +1,14 @@
-from recipes.models import Diet, Recipe, Ingredient, IngredientQuantity, \
-    Cuisine, RecipeCuisine, RecipeDiet, Step, StepImage, Unit
 from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView, \
     UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+
 from posts.serializers import DietSerializer, RecipeCuisineSerializer, \
-    RecipeDietSerializer, RecipeSerializer, \
-    CuisineSerializer, \
-    IngredientSerializer, IngredientQuantitySerializer, \
-    StepImageSerializer, StepSerializer, StepVideoSerializer, UnitSerializer
+    RecipeDietSerializer, RecipeSerializer, CuisineSerializer, \
+    IngredientSerializer, IngredientQuantitySerializer, StepImageSerializer, \
+    StepSerializer, StepVideoSerializer, UnitSerializer
+from recipes.models import Diet, Recipe, Ingredient, IngredientQuantity, \
+    Cuisine, RecipeCuisine, RecipeDiet, Step, StepImage, StepVideo, Unit
 
 
 class CuisineCreateView(CreateAPIView):
@@ -47,7 +47,6 @@ class DietOneView(RetrieveAPIView):
 
     def get_object(self):
         return get_object_or_404(Diet, id=self.kwargs.get('did'))
-
 
 
 class IngredientCreateView(CreateAPIView):
@@ -112,6 +111,12 @@ class RecipeUpdateView(UpdateAPIView):
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
 
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(Recipe, id=id, creator_id=self.request.user)
+
 
 class RecipeDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
@@ -147,8 +152,22 @@ class IngredientQuantityUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = IngredientQuantitySerializer
 
-    def get_queryset(self):
-        return IngredientQuantity.objects.all()
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(IngredientQuantity, id=id, creator_id=self.request.user)
+
+
+class IngredientQuantityDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = IngredientQuantitySerializer
+
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(IngredientQuantity, id=id, creator_id=self.request.user)
 
 
 class StepImageCreateView(CreateAPIView):
@@ -160,8 +179,11 @@ class StepImageDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StepImageSerializer
 
-    def get_queryset(self):
-        return StepImage.objects.all()
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(StepImage, id=id, creator_id=self.request.user)
 
 
 class StepVideoCreateView(CreateAPIView):
@@ -173,8 +195,11 @@ class StepVideoDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StepVideoSerializer
 
-    def get_queryset(self):
-        return StepImage.objects.all()
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(StepVideo, id=id, creator_id=self.request.user)
 
 
 class StepCreateView(CreateAPIView):
@@ -186,16 +211,22 @@ class StepUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StepSerializer
 
-    def get_queryset(self):
-        return Step.objects.all()
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(Step, id=id, creator_id=self.request.user)
 
 
 class StepDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StepSerializer
 
-    def get_queryset(self):
-        return Step.objects.all()
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(Step, id=id, creator_id=self.request.user)
 
 
 class RecipeCuisineCreateView(CreateAPIView):
@@ -207,8 +238,11 @@ class RecipeCuisineDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = RecipeCuisineSerializer
 
-    def get_queryset(self):
-        return RecipeCuisine.objects.all()
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(RecipeCuisine, id=id, creator_id=self.request.user)
 
 
 class RecipeDietCreateView(CreateAPIView):
@@ -220,5 +254,8 @@ class RecipeDietDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = RecipeDietSerializer
 
-    def get_queryset(self):
-        return RecipeDiet.objects.all()
+    def get_object(self):
+        id = self.request.data.get('id')
+        if id:
+            id = id[0]
+        return get_object_or_404(RecipeDiet, id=id, creator_id=self.request.user)
