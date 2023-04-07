@@ -5,12 +5,10 @@ import {IconSemiLogo, IconBriefStroked} from '@douyinfe/semi-icons';
 
 import Search from "./Search";
 import UserInfo from "./UserInfo";
-import UserContext, {useUserContext} from "../contexts/UserContext";
-import {useContext} from "react";
 
 export const MyNav = () => {
     let navigate = useNavigate();
-    const {user, setUser} = useContext(UserContext);
+    const user = localStorage.getItem("user");
 
     const RouterChange = () => {
         if (!user) {
@@ -24,7 +22,7 @@ export const MyNav = () => {
         <>
             <div style={{height:59, backgroundColor:"#000"}}>
                 <Nav
-                    renderWrapper={({itemElement, isSubNav, isInSubNav, props}) => {
+                    renderWrapper={({itemElement, props}) => {
                         const routerMap = {
                             home: "/",
                             explore: "/explore"
@@ -51,7 +49,7 @@ export const MyNav = () => {
                         text: 'Easychef'
                     }}
                     footer={
-                        <UserContext.Provider value={useUserContext()}>
+                        <>
                             <UserInfo/>
                             <Button theme='solid'
                                     type='warning'
@@ -61,7 +59,7 @@ export const MyNav = () => {
                             >
                                 New Recipe
                             </Button>
-                        </UserContext.Provider>
+                        </>
                     }
                 />
             </div>
