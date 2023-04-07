@@ -92,7 +92,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                                                     read_only=True)
     avg_rating = serializers.SerializerMethodField('get_avg_rating',
                                                    read_only=True)
-    cover = serializers.ImageField(use_url=True, required=True)
+    cover = serializers.ImageField(use_url=True, required=False)
 
     cuisine_data = serializers.ListField(
         child=serializers.CharField(), write_only=True, required=False
