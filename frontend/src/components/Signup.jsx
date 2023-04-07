@@ -80,8 +80,8 @@ export const Signup = () => {
                 axios.get(`http://localhost:8000/accounts/profile/${user_id}/`)
                     .then(response => {
                         localStorage.setItem("user", JSON.stringify(response.data));
+                        navigate("/");
                     })
-                navigate("/");
             });
     }
     return (

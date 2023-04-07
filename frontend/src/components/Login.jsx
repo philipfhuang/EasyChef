@@ -40,8 +40,8 @@ export const Login = () => {
         axios.get(`http://localhost:8000/accounts/profile/${user_id}/`)
             .then(response => {
                 localStorage.setItem("user", JSON.stringify(response.data));
+                navigate("/");
             })
-        navigate("/");
     }
     return (
         <div style={{width: 300, margin: "0 auto", marginTop: 100}}>
