@@ -1,13 +1,10 @@
 import logo from '../images/logo-name-h.png'
 import {Button, Form} from "@douyinfe/semi-ui";
-import {useContext} from "react";
 import jwt_decode from "jwt-decode";
 
-import UserContext from "../contexts/UserContext";
 import {useNavigate} from "react-router-dom";
 
 export const Login = () => {
-    const {user, setUser} = useContext(UserContext);
 
     let res = null;
     let navigate = useNavigate();
@@ -45,12 +42,12 @@ export const Login = () => {
     }
     const loginSuccess = () => {
         res.then(result => {
-            setUser({token: result})
+            localStorage.setItem("token", JSON.stringify(result));
             const user_id = jwt_decode(result.access).user_id;
             fetch(`http://localhost:8000/accounts/profile/${user_id}/`, {method: 'GET'})
                 .then(response => response.json())
                 .then(res => {
-                    setUser((params) => ({...params, userinfo: res}));
+                    localStorage.setItem("user", JSON.stringify(res));
                 })
         })
         navigate("/");
