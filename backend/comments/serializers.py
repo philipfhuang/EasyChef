@@ -1,14 +1,17 @@
 from rest_framework import serializers
+
+from accounts.serializers import LessInfoUserSerializer
 from .models import Comment, CommentImage, CommentVideo
 
 
 class CommentSerializer(serializers.ModelSerializer):
     images = serializers.ImageField(source='images.image', read_only=True, many=True)
     videos = serializers.FileField(source='videos.video', read_only=True, many=True)
+    user = LessInfoUserSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ('id', 'userid', 'recipeid', 'content', 'rating', 'images', 'videos')
+        fields = ('id', 'recipeid', 'content', 'rating', 'images', 'videos', 'user')
 
     def create(self, validated_data):
         return Comment.objects.create(
