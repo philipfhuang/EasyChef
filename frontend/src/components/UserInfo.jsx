@@ -1,13 +1,11 @@
 import {Avatar, Dropdown} from "@douyinfe/semi-ui";
 import {IconEdit, IconUser, IconCart, IconExit, IconUserAdd} from "@douyinfe/semi-icons";
-import React, {useContext} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import UserContext from "../contexts/UserContext";
 
 
 export const UserInfo = () => {
     let navigate = useNavigate();
-    const {user, setUser} = useContext(UserContext);
+    const user = localStorage.getItem("user");
 
     const RouterChange = (path, needAuth) => {
         if (needAuth && !user) {
@@ -22,10 +20,10 @@ export const UserInfo = () => {
             position={'bottom'}
             render={
                 <Dropdown.Menu>
-                    <Dropdown.Item icon={<IconUser/>} onClick={()=>{RouterChange("login", true)}}>
+                    <Dropdown.Item icon={<IconUser/>} onClick={()=>{RouterChange("login", false)}}>
                         Login
                     </Dropdown.Item>
-                    <Dropdown.Item icon={<IconUserAdd/>} onClick={()=>{RouterChange("signup", true)}}>
+                    <Dropdown.Item icon={<IconUserAdd/>} onClick={()=>{RouterChange("signup", false)}}>
                         Sign Up
                     </Dropdown.Item>
                 </Dropdown.Menu>
