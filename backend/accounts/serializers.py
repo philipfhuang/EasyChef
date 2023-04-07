@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from accounts.models import Favorite, Like, User
+from recipes.models import Recipe
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -32,16 +33,21 @@ class FavorSerializer(serializers.ModelSerializer):
         return favorite
 
 
+class SimpleRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'title', 'cover')
+
+
 class UserSerializer(serializers.ModelSerializer):
-    created_recipes = serializers.PrimaryKeyRelatedField(many=True,
-                                                         read_only=True)
+    created_recipes = SimpleRecipeSerializer(many=True, read_only=True)
     id = serializers.IntegerField(read_only=True)
     password = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)
     shopping_list = serializers.PrimaryKeyRelatedField(many=True,
                                                        read_only=True)
-    commented_recipes = serializers.SerializerMethodField(
-        'get_commented_recipes', read_only=True)
+    commented_recipes = serializers.SerializerMethodField('get_commented_recipes',
+                                                      read_only=True)
     liked_recipes = serializers.SerializerMethodField('get_liked_recipes',
                                                       read_only=True)
     favored_recipes = serializers.SerializerMethodField('get_favored_recipes',
@@ -73,13 +79,19 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def get_commented_recipes(self, obj):
-        return obj.comments.values_list('recipeid', flat=True)
+        commented_recipes = obj.comments.values_list('recipeid', flat=True)
+        recipes = Recipe.objects.filter(id__in=commented_recipes)
+        return SimpleRecipeSerializer(recipes, many=True).data
 
     def get_liked_recipes(self, obj):
-        return obj.likes.values_list('recipeid', flat=True)
+        liked_recipes = obj.likes.values_list('recipeid', flat=True)
+        recipes = Recipe.objects.filter(id__in=liked_recipes)
+        return SimpleRecipeSerializer(recipes, many=True).data
 
     def get_favored_recipes(self, obj):
-        return obj.favorites.values_list('recipeid', flat=True)
+        favored_recipes = obj.favorites.values_list('recipeid', flat=True)
+        recipes = Recipe.objects.filter(id__in=favored_recipes)
+        return SimpleRecipeSerializer(recipes, many=True).data
 
 
 class LessInfoUserSerializer(serializers.ModelSerializer):
