@@ -34,8 +34,6 @@ class DeleteCommentView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        if id:
-            id = id[0]
         return get_object_or_404(Comment, id=id, userid=self.request.user)
 
 
@@ -50,8 +48,6 @@ class CommentImageDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        if id:
-            id = id[0]
         return get_object_or_404(CommentImage, id=id, comment__userid=self.request.user)
 
 
@@ -66,8 +62,6 @@ class CommentVideoDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        if id:
-            id = id[0]
         return get_object_or_404(CommentVideo, id=id, comment__userid=self.request.user)
 
 

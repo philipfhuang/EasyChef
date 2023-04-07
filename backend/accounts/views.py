@@ -52,8 +52,6 @@ class UnlikeView(DestroyAPIView):
 
     def get_object(self):
         recipeid = self.request.data.get('recipeid')
-        if recipeid:
-            recipeid = recipeid[0]
         return get_object_or_404(Like, recipeid=recipeid, userid=self.request.user)
 
 
@@ -68,8 +66,6 @@ class UnfavorView(DestroyAPIView):
 
     def get_object(self):
         recipeid = self.request.data.get('recipeid')
-        if recipeid:
-            recipeid = recipeid[0]
         return get_object_or_404(Favorite, recipeid=recipeid, userid=self.request.user)
 
 
