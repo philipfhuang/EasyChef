@@ -1,8 +1,9 @@
 import {Link, Outlet, useNavigate} from "react-router-dom";
 import * as React from "react";
 import {Nav, Button} from '@douyinfe/semi-ui';
-import {IconSemiLogo, IconBriefStroked} from '@douyinfe/semi-icons';
+import {IconBriefStroked} from '@douyinfe/semi-icons';
 
+import logo from "../images/logo.png";
 import Search from "./Search";
 import UserInfo from "./UserInfo";
 
@@ -45,7 +46,7 @@ export const MyNav = () => {
                     ]}
                     // onSelect={key => console.log(key)}
                     header={{
-                        logo: <IconSemiLogo style={{height: '36px', fontSize: 36}}/>,
+                        logo: <img src={logo} style={{height: 40}}/>,
                         text: 'Easychef'
                     }}
                     footer={

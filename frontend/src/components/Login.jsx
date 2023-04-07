@@ -45,7 +45,7 @@ export const Login = () => {
     }
     return (
         <div style={{width: 300, margin: "0 auto", marginTop: 100}}>
-            <img src={logo} alt="logo" style={{width: "100%"}}/>
+            <img src={logo} alt="logo" style={{width: "100%", height: "100%"}}/>
             <Form style={{marginTop: 10}} validateFields={values => loginValidate(values)} onSubmit={loginSuccess}>
                 <Form.Input field='username' label='Username' placeholder='Username'/>
                 <Form.Input field='password' label='Password' placeholder='Password' mode='password'/>
