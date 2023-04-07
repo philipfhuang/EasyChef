@@ -1,10 +1,10 @@
-import logo from "../images/logo-name-h.png";
-import {Button, Form} from "@douyinfe/semi-ui";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import {Button, Form} from "@douyinfe/semi-ui";
 
-// validateFields={values => loginValidate(values)} onSubmit={loginSuccess}
+import logo from "../images/logo-name-h.png";
+
 
 export const Signup = () => {
     let res = null;
@@ -86,7 +86,7 @@ export const Signup = () => {
     }
     return (
         <div style={{width: 300, margin: "0 auto", marginTop: 70}}>
-            <img src={logo} alt="logo" style={{width: "100%"}}/>
+            <img src={logo} alt="logo" style={{width: "100%", height: "100%"}}/>
             <Form style={{marginTop: 10}} validateFields={values => signupValidate(values)} onSubmit={signupSuccess}>
                 <Form.InputGroup>
                     <Form.Input field='first_name' label='First Name' placeholder='First Name' style={{width:"50%"}}/>
