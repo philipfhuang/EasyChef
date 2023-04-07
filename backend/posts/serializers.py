@@ -145,10 +145,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         for ingre in ingredient_data:
             try:
                 unit = Unit.objects.get(name=ingre['unit'])
-                ingredient = Ingredient.objects.get(
-                    name=ingre['ingredient'])
             except Unit.DoesNotExist:
                 unit = Unit.objects.create(name=ingre['unit'])
+
+            try:
+                ingredient = Ingredient.objects.get(
+                    name=ingre['ingredient'])
             except Ingredient.DoesNotExist:
                 ingredient = Ingredient.objects.create(
                     name=ingre['ingredient'])
