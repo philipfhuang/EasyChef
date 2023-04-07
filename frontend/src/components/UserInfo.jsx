@@ -5,7 +5,7 @@ import {Link, useNavigate} from "react-router-dom";
 
 export const UserInfo = () => {
     let navigate = useNavigate();
-    const user = localStorage.getItem("user");
+    const user = JSON.parse(localStorage.getItem("user"));
 
     const RouterChange = (path, needAuth) => {
         if (needAuth && !user) {
@@ -35,6 +35,12 @@ export const UserInfo = () => {
         </Dropdown>
     )
 
+    const logout = () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        navigate("/")
+    }
+
     return (
         <Dropdown
             position={'bottom'}
@@ -48,8 +54,10 @@ export const UserInfo = () => {
                             alignItems: "center",
                             width: 150
                         }}>
-                            <Avatar size="default" color='orange' style={{margin: "auto"}}>BD</Avatar>
-                            <div style={{marginTop: 10}}>Hello World</div>
+                            <Avatar size="small" color='orange' style={{margin: "auto"}} src={user.avatar}>
+                                {`${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`}
+                            </Avatar>
+                            <div style={{marginTop: 10}}>{`${user.first_name} ${user.last_name}`}</div>
                         </div>
                     </Dropdown.Title>
                     <Dropdown.Divider/>
@@ -62,13 +70,15 @@ export const UserInfo = () => {
                     <Dropdown.Item icon={<IconCart/>} onClick={()=>{RouterChange("shoppinglists", true)}}>
                         Shopping List
                     </Dropdown.Item>
-                    <Dropdown.Item icon={<IconExit/>} onClick={()=>{RouterChange("logout", true)}}>
+                    <Dropdown.Item icon={<IconExit/>} onClick={logout}>
                         Logout
                     </Dropdown.Item>
                 </Dropdown.Menu>
             }>
             <Link to={`/profile/1`} style={{textDecoration: "none", color:"black"}}>
-                <Avatar size="small" color='orange' style={{margin: "auto"}}>BD</Avatar>
+                <Avatar size="small" color='orange' style={{margin: "auto"}} src={user.avatar}>
+                    {`${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`}
+                </Avatar>
             </Link>
         </Dropdown>
     )
