@@ -128,7 +128,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             diet_data = []
         step_data = validated_data.pop('steps')
 
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(creator=self.context['request'].user, **validated_data)
 
         for name in cuisine_data:
             try:
