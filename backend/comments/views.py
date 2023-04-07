@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import DestroyAPIView, ListAPIView, CreateAPIView
+from rest_framework.generics import DestroyAPIView, ListAPIView, CreateAPIView, \
+    RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from comments.serializers import CommentImageSerializer, CommentSerializer
@@ -12,20 +13,18 @@ class CreateCommentView(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class GetCommentView(ListAPIView):
+class CommentView(RetrieveAPIView):
+    serializer_class = CommentSerializer
+
+    def get_object(self):
+        return get_object_or_404(Comment, id=self.kwargs.get('id'))
+
+
+class CommentListView(ListAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        rid = self.kwargs.get('rid')
-        queryset = Comment.objects.filter(recipeid=rid)
-        return queryset
-
-
-class ComentListView(ListAPIView):
-    serializer_class = CommentSerializer
-
-    def get_queryset(self):
-        queryset = Comment.objects.filter(recipeid=self.request.data.get('recipeid'))
+        queryset = Comment.objects.filter(recipeid=self.kwargs.get('rid'))
         return queryset
 
 

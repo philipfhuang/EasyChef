@@ -19,11 +19,11 @@ class CommentVideoSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     images = CommentImageSerializer(many=True, read_only=True)
     videos = CommentVideoSerializer(many=True, read_only=True)
-    user = LessInfoUserSerializer(read_only=True)
+    userid = LessInfoUserSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ('id', 'recipeid', 'content', 'rating', 'images', 'videos', 'user')
+        fields = ('id', 'recipeid', 'content', 'rating', 'images', 'videos', 'userid')
 
     def create(self, validated_data):
         return Comment.objects.create(
