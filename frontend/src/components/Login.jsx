@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 
 import logo from '../images/logo-name-h.png'
@@ -54,6 +54,9 @@ export const Login = () => {
                             style={{width: 100, backgroundColor: "#976332"}}>Login</Button>
                 </div>
             </Form>
+            <Link to={"/signup"} style={{display: "flex", justifyContent: "center", marginTop: 20}}>
+                Don't have an account yet? Sign up
+            </Link>
         </div>
     )
 }
