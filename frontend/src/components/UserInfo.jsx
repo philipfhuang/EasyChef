@@ -55,9 +55,10 @@ export const UserInfo = () => {
                             width: 150
                         }}>
                             <Avatar size="small" color='orange' style={{margin: "auto"}} src={user.avatar}>
-                                {`${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`}
+                                {user.first_name.charAt(0).toUpperCase()}{user.last_name.charAt(0).toUpperCase()}
                             </Avatar>
-                            <div style={{marginTop: 10}}>{`${user.first_name} ${user.last_name}`}</div>
+                            <div style={{marginTop: 10, color:"#1C1F23", fontSize:15}}>{user.first_name} {user.last_name}</div>
+                            <div style={{}}>@{user.username}</div>
                         </div>
                     </Dropdown.Title>
                     <Dropdown.Divider/>
