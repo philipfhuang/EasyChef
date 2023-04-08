@@ -1,35 +1,31 @@
-import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {BackTop, Carousel, List, Rating, Space, Typography} from "@douyinfe/semi-ui";
-import { IconArrowUp } from '@douyinfe/semi-icons';
+import {BackTop, List, Rating, Spin, Typography} from "@douyinfe/semi-ui";
+import {IconArrowUp} from "@douyinfe/semi-icons";
 
 import './common.css'
 
-export const Home = () => {
+
+export const Explore = () => {
     let navigate = useNavigate();
 
     const [recipes, setRecipes] = useState(null);
-    const [topRecipes, setTopRecipes] = useState(null);
     const firstTime = useRef(true);
     const [loading, setLoading] = useState(true);
+
+    let next = 'http://127.0.0.1:8000/search/?sort=sort';
 
     useEffect(() => {
         if (!firstTime.current) return;
         firstTime.current = false;
 
         async function getRecipes() {
-            await axios.get('http://127.0.0.1:8000/search/?sort=sort')
-                .then(response => {
-                    setRecipes(response.data.results)
-                })
-
             let count = 3;
-            let next = 'http://127.0.0.1:8000/search/?sort=sort&page=2';
             while (count > 0 && next) {
                 await axios.get(next)
                     .then(response => {
-                        setTopRecipes(prevState => {
+                        setRecipes(prevState => {
                             if (!prevState) {
                                 return [...response.data.results]
                             }
@@ -41,12 +37,39 @@ export const Home = () => {
                             return prevState;
                         })
                         next = response.data.next;
+                        if (!next) {
+                            setLoading(false);
+                        }
                         count--;
                     })
             }
-            setLoading();
         }
         getRecipes();
+
+        window.addEventListener('scroll', function() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                if (!next) {
+                    setLoading(false);
+                    return;
+                }
+                axios.get(next)
+                    .then(response => {
+                        setRecipes(prevState => {
+                            if (!prevState) {
+                                return [...response.data.results]
+                            }
+                            response.data.results.forEach(recipe => {
+                                if (!prevState.includes(recipe)) {
+                                    prevState.push(recipe)
+                                }
+                            })
+                            return prevState;
+                        })
+                        next = response.data.next;
+                    })
+            }
+        });
+
     }, [])
 
 
@@ -55,13 +78,6 @@ export const Home = () => {
     }
 
     const { Title, Paragraph } = Typography;
-
-    const style = {
-        maxWidth: 1200,
-        width: '100%',
-        height: '400px',
-        margin: '0 auto',
-    };
 
     const topStyle = {
         display: 'flex',
@@ -75,45 +91,15 @@ export const Home = () => {
         bottom: 100,
     };
 
-    const titleStyle = {
-        position: 'absolute',
-        top: '150px',
-        left: '100px',
-        color: '#1C1F23'
-    };
-
-    const colorStyle = {
-        color: 'aliceblue'
-    };
-
     return (
         <>
-            <Carousel style={style} indicatorType='line' arrowType='hover' theme='light'>
-                {
-                    recipes && recipes.map(recipe => {
-                        return (
-                            <div key={recipe.id} style={{ backgroundSize: 'cover', backgroundImage: `url(${recipe.cover})`}} onClick={() => toRecipe(recipe.id)}>
-                                <div className={'hoverPointer'} style={{height:'100%', width:'100%', backgroundColor: 'rgba(0, 0, 0, .2)'}}>
-                                    <Space vertical align='start' spacing='medium' style={titleStyle}>
-                                        <Title heading={2} style={colorStyle}>{recipe.title}</Title>
-                                        <Space vertical align='start'>
-                                            <Paragraph style={colorStyle}>{recipe.description}</Paragraph>
-                                        </Space>
-                                    </Space>
-                                </div>
-                            </div>
-                        )
-                    })
-                }
-            </Carousel>
-
             <List
                 style={{width:'100%', maxWidth:1200, margin: "0 auto", marginTop:10}}
                 grid={{
                     gutter: 16,
                     span: 8,
                 }}
-                dataSource={topRecipes}
+                dataSource={recipes}
                 renderItem={item => (
                     <List.Item style={{marginTop:20, height:300, backgroundColor:'white', borderRadius:10, overflow:'hidden'}}
                                className='hoverPointer hoverScale' onClick={() => toRecipe(item.id)}>
@@ -129,12 +115,14 @@ export const Home = () => {
                     </List.Item>
                 )}
             />
-            <div style={{height: 100}}/>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
+                {loading ? <Spin size='large' tip='Loading'/> : <></>}
+            </div>
             <BackTop style={topStyle}>
                 <IconArrowUp />
             </BackTop>
         </>
-
-    );
+    )
 }
-export default Home
+
+export default Explore

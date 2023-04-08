@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from "react-router-dom";
 import { Avatar, Button, Tooltip } from '@douyinfe/semi-ui';
 
-const profile = () => {
+const Profile = () => {
 
     const [first_name, setFirst] = useState(null);
     const [last_name, setLast] = useState(null);
@@ -86,4 +86,4 @@ const profile = () => {
     );
 }
 
-export default profile;
+export default Profile;

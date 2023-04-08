@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import Recipe from "./components/Recipe";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
+import Explore from "./components/Explore";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/signup" element={<Signup/>}/>
                     <Route path="/recipe" element={<Recipe/>}/>
+                    <Route path="/explore" element={<Explore/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>
