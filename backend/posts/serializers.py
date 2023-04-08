@@ -68,7 +68,7 @@ class RecipeDietSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeDiet
-        fields = ('recipe', 'diet')
+        fields = ('id', 'recipe', 'diet')
 
 
 class RecipeCuisineSerializer(serializers.ModelSerializer):
@@ -77,7 +77,7 @@ class RecipeCuisineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeCuisine
-        fields = ('recipe', 'cuisine')
+        fields = ('id', 'recipe', 'cuisine')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
