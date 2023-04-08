@@ -18,7 +18,7 @@ const Recipe = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/posts/recipe/1/');
+                const response = await axios.get('http://127.0.0.1:8000/posts/recipe/45/');
                 setRecipe(response.data);
                 setComments(response.data.comments);
     
@@ -40,7 +40,7 @@ const Recipe = () => {
             } catch (error) {
                 console.error('Error fetching recipe:', error);
             }
-            await fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/1/`);
+            await fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/45/`);
 
         }
         fetchData();
@@ -338,6 +338,12 @@ const Recipe = () => {
                         {step.content}
                         {step.images.map(image => (
                             <img key={image.id} src={image.image} alt={image.image} />
+                        ))}
+                        {step.videos.map(video => (
+                            <video width="320" height="240" controls>
+                            <source src={video.video} type="video/ogg" />
+                            Your browser does not support the video tag.
+                        </video>
                         ))}
                     </li>
                 ))}

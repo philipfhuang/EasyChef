@@ -14,16 +14,49 @@ const CreateRecipe = () => {
     const [recipeId, setRecipeId] = useState(null);
     const [coverFile, setCoverFile] = useState(null);
     const [stepIds, setStepIds] = useState([]);
+    const [stepVideos, setStepVideos] = useState([]);
+
+    const addStepVideo = async (stepId, videoFiles) => {
+        if (!stepId || !videoFiles || videoFiles.length === 0) {
+            console.error(`Error adding videos to step ${stepId}: No step ID or video files.`);
+            return;
+        }
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        };
+
+        // Iterate over videoFiles and make an API call for each video
+        for (const videoFile of videoFiles) {
+            const formData = new FormData();
+            formData.append('step', stepId);
+            formData.append('video', videoFile);
+
+            try {
+                await axios.post('http://127.0.0.1:8000/posts/stepVideo/', formData, config);
+                console.log(`Video added to step ${stepId} successfully!`);
+            } catch (error) {
+                console.error(`Error adding video to step ${stepId}:`, error);
+                alert(`Failed to add video to step ${stepId}.`);
+            }
+        }
+
+        alert(`All videos added to step ${stepId} successfully!`);
+    };
 
     const updateCoverAndAddStepImages = async (recipeId, stepIds, steps) => {
         await updateCover(recipeId);
         for (let i = 0; i < steps.length; i++) {
             const stepId = stepIds[i];
             const imageFiles = steps[i].images;
+            const videoFiles = steps[i].videos;
             await addStepImage(stepId, imageFiles);
+            await addStepVideo(stepId, videoFiles);
         }
     };
-    
     
 
     const addStepImage = async (stepId, imageFiles) => {
@@ -56,9 +89,6 @@ const CreateRecipe = () => {
     
         alert(`All images added to step ${stepId} successfully!`);
     };
-    
-    
-    
     
 
     const updateCover = async (recipeId) => {
@@ -113,21 +143,27 @@ const CreateRecipe = () => {
     };
 
     const addStep = () => {
-        setSteps([...steps, { step_number: steps.length + 1, content: '', images: [null] }]);
+        setSteps([...steps, { step_number: steps.length + 1, content: '', images: [], videos: [] }]);
     };
     
 
     const handleImageInputChange = (stepIndex, imageIndex, imageFile) => {
         const updatedSteps = [...steps];
-        if (updatedSteps[stepIndex].images[imageIndex] === null) {
-            updatedSteps[stepIndex].images[imageIndex] = [imageFile];
-        } else {
-            updatedSteps[stepIndex].images[imageIndex].push(imageFile);
-        }
+        updatedSteps[stepIndex].images[imageIndex] = imageFile;
         setSteps(updatedSteps);
     };
     
-    
+    const handleVideoInputChange = (stepIndex, videoIndex, videoFile) => {
+        const updatedSteps = [...steps];
+        updatedSteps[stepIndex].videos[videoIndex] = videoFile;
+        setSteps(updatedSteps);
+    };
+
+    const deleteIngredient = (index) => {
+        const updatedQuantities = [...ingredientQuantities];
+        updatedQuantities.splice(index, 1);
+        setIngredientQuantities(updatedQuantities);
+    };
 
     const updateStep = (index, value) => {
         const updatedSteps = [...steps];
@@ -254,6 +290,9 @@ const CreateRecipe = () => {
                             onChange={(e) => updateIngredientQuantity(index, 'unit', e.target.value)}
                         />
                     </label>
+                    <button type="button" onClick={() => deleteIngredient(index)}>
+                        Delete Ingredient
+                    </button>
                 </div>
             ))}
             <button type="button" onClick={addIngredientQuantity}>
@@ -295,6 +334,33 @@ const CreateRecipe = () => {
                         updatedSteps[stepIndex].images.push(null);
                         setSteps(updatedSteps);
                     }}>Add Image</button>
+
+                    {step.videos.map((video, videoIndex) => (
+                        <div key={videoIndex}>
+                            <label>
+                            Video {videoIndex + 1} for step {step.step_number}:
+                            <input
+                                type="file"
+                                onChange={(e) => {
+                                    handleVideoInputChange(stepIndex, videoIndex, e.target.files[0], 'videos');
+                                    console.log('Video file for step', stepIndex, 'video', videoIndex, 'set to:', e.target.files[0]);
+                                }}
+                            />
+                            </label>
+                            <button type="button" onClick={() => {
+                                const updatedSteps = [...steps];
+                                updatedSteps[stepIndex].videos.splice(videoIndex, 1);
+                                setSteps(updatedSteps);
+                            }}>Delete Video {videoIndex + 1}</button>
+                            </div>
+                            ))}
+                            <button type="button" onClick={() => {
+                                const updatedSteps = [...steps];
+                                updatedSteps[stepIndex].videos.push(null);
+                                setSteps(updatedSteps);
+                            }}>Add Video</button>
+
+
                     <button type="button" onClick={() => {
                         const updatedSteps = [...steps];
                         updatedSteps.splice(stepIndex, 1);
