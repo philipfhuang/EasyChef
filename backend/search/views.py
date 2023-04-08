@@ -14,7 +14,6 @@ def get_recipe_rating(recipe):
     rating = comments.aggregate(Avg('rating'))['rating__avg']
     if rating is None:
         rating = 0
-    print(recipe, rating)
     return rating
 
 
