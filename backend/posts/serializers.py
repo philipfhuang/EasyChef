@@ -2,7 +2,8 @@ from django.db.models import Avg
 from rest_framework import serializers
 
 from recipes.models import Diet, Recipe, Cuisine, Ingredient, \
-    IngredientQuantity, RecipeCuisine, RecipeDiet, Step, StepImage, Unit
+    IngredientQuantity, RecipeCuisine, RecipeDiet, Step, StepImage, StepVideo, \
+    Unit
 from accounts.serializers import LessInfoUserSerializer
 from comments.serializers import CommentSerializer
 
@@ -21,7 +22,7 @@ class StepImageSerializer(serializers.ModelSerializer):
 
 class StepVideoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StepImage
+        model = StepVideo
         fields = ('id', 'step', 'video')
 
 
