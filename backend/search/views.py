@@ -9,27 +9,12 @@ from search.serializer import SearchSerializer
 
 
 # Create your views here.
-def get_cuisine_id(name):
-    try:
-        cuisine = Cuisine.objects.get(name=name)
-    except Cuisine.DoesNotExist:
-        cuisine = None
-    if cuisine:
-        return cuisine.id
-
-
-def get_creator_id(name):
-    try:
-        creator = User.objects.get(username=name)
-    except User.DoesNotExist:
-        creator = None
-    if creator:
-        return creator.id
-
-
 def get_recipe_rating(recipe):
     comments = Comment.objects.filter(recipeid=recipe.id)
     rating = comments.aggregate(Avg('rating'))['rating__avg']
+    if rating is None:
+        rating = 0
+    print(recipe, rating)
     return rating
 
 
@@ -40,25 +25,26 @@ class SearchView(ListAPIView):
         search_param = self.request.GET.get('content')
         if search_param is None:
             search_param = ''
-        cuisine_id = get_cuisine_id(search_param)
-        creator_id = get_creator_id(search_param)
         recipes = Recipe.objects.filter(Q(title__icontains=search_param) |
-                                        Q(creator__exact=creator_id) |
-                                        Q(cuisine__exact=cuisine_id))
+                                        Q(creator__username__icontains=search_param) |
+                                        Q(cuisines__cuisine__name__icontains=search_param))
         cooktime = self.request.GET.get('cooktime')
         ingredient = self.request.GET.get('ingredient')
         diet = self.request.GET.get('diet')
-        cuisine = self.request.GET.get('cuisine')
+        cuisines = self.request.GET.get('cuisine')
         sort = self.request.GET.get('sort')
         if cooktime:
-            recipes = recipes.filter(cooking_time__lt=cooktime)
+            recipes = recipes.filter(cooking_time__lte=cooktime)
         if ingredient:
+            ingredient = ingredient.split(',')
             recipes = recipes.filter(
-                ingredient_quantities__ingredient__name__contains=ingredient)
+                ingredient_quantities__ingredient__name__in=ingredient)
         if diet:
-            recipes = recipes.filter(diet__exact=diet)
-        if cuisine:
-            recipes = recipes.filter(cuisine__exact=cuisine)
+            diet = diet.split(',')
+            recipes = recipes.filter(diets__diet__name__in=diet)
+        if cuisines:
+            cuisines = cuisines.split(',')
+            recipes = recipes.filter(cuisines__cuisine__name__in=cuisines)
         if sort:
             recipes = sorted(recipes, key=lambda x: get_recipe_rating(x),
                              reverse=True)
