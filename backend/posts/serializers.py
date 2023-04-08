@@ -2,7 +2,7 @@ from django.db.models import Avg
 from rest_framework import serializers
 
 from recipes.models import Diet, Recipe, Cuisine, Ingredient, \
-    IngredientQuantity, RecipeCuisine, RecipeDiet, Step, StepImage, Unit, StepVideo
+IngredientQuantity, RecipeCuisine, RecipeDiet, Step, StepImage, StepVideo, Unit
 from accounts.serializers import LessInfoUserSerializer
 from comments.serializers import CommentSerializer
 

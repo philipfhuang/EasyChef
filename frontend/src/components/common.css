@@ -1,0 +1,11 @@
+.hoverPointer:hover {
+    cursor: pointer;
+}
+
+.hoverScale {
+    transition: transform 0.3s;
+}
+
+.hoverScale:hover {
+    transform: scale(1.05);
+}

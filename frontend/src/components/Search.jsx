@@ -1,28 +1,35 @@
 import React, {useState} from 'react';
 import {AutoComplete} from '@douyinfe/semi-ui';
 import {IconSearch} from '@douyinfe/semi-icons';
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 export const Search = () => {
     const [stringData, setStringData] = useState([]);
     const [value, setValue] = useState('');
 
-    const handleStringSearch = (value) => {
-        let result;
-        if (value) {
-            result = ['gmail.com', '163.com', 'qq.com'].map(domain => `${value}@${domain}`);
-        } else {
-            result = [];
+    let navigate = useNavigate();
+
+    var timer;
+    const handleStringSearch = async (value) => {
+        if (!value) return;
+        if (timer) {
+            clearTimeout(timer);
         }
-        setStringData(result);
+        timer = setTimeout(async () => {
+            await axios.get(`http://127.0.0.1:8000/search/aid/?content=${value}`)
+                .then(response => {
+                    setStringData(response.data.results);
+                })
+        }, 500)
     };
 
     const handleChange = (value) => {
-        console.log('onChange', value);
         setValue(value);
     };
 
     const submitSearch = () => {
-        console.log('submitSearch', value);
+        navigate(`/search?search=${value}`);
     }
     return (
         <AutoComplete
