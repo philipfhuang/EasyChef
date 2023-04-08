@@ -150,7 +150,7 @@ class IngredientQuantityUpdateView(UpdateAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(IngredientQuantity, id=id, creator_id=self.request.user)
+        return get_object_or_404(IngredientQuantity, id=id)
 
 
 class IngredientQuantityDeleteView(DestroyAPIView):
@@ -159,7 +159,7 @@ class IngredientQuantityDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(IngredientQuantity, id=id, creator_id=self.request.user)
+        return get_object_or_404(IngredientQuantity, id=id)
 
 
 class StepImageCreateView(CreateAPIView):
@@ -173,7 +173,7 @@ class StepImageDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(StepImage, id=id, creator_id=self.request.user)
+        return get_object_or_404(StepImage, id=id)
 
 
 class StepVideoCreateView(CreateAPIView):
@@ -187,7 +187,7 @@ class StepVideoDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(StepVideo, id=id, creator_id=self.request.user)
+        return get_object_or_404(StepVideo, id=id)
 
 
 class StepCreateView(CreateAPIView):
@@ -201,7 +201,7 @@ class StepUpdateView(UpdateAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(Step, id=id, creator_id=self.request.user)
+        return get_object_or_404(Step, id=id)
 
 
 class StepDeleteView(DestroyAPIView):
@@ -210,7 +210,7 @@ class StepDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(Step, id=id, creator_id=self.request.user)
+        return get_object_or_404(Step, id=id)
 
 
 class RecipeCuisineCreateView(CreateAPIView):
@@ -224,7 +224,7 @@ class RecipeCuisineDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(RecipeCuisine, id=id, creator_id=self.request.user)
+        return get_object_or_404(RecipeCuisine, id=id)
 
 
 class RecipeDietCreateView(CreateAPIView):
@@ -238,4 +238,4 @@ class RecipeDietDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(RecipeDiet, id=id, creator_id=self.request.user)
+        return get_object_or_404(RecipeDiet, id=id)
