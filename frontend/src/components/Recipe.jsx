@@ -26,13 +26,13 @@ const Recipe = () => {
                 console.log(storedUser);
     
                 if (storedUser.liked_recipes !== undefined) {
-                    if (storedUser.liked_recipes.includes(response.data.id)) {
+                    if (storedUser.liked_recipes.some(recipe => recipe.id === response.data.id)) {
                         setLiked(true);
                     }
                 }
     
                 if (storedUser.favored_recipes !== undefined) {
-                    if (storedUser.favored_recipes.includes(response.data.id)) {
+                    if (storedUser.favored_recipes.some(favor => favor.id === response.data.id)) {
                         setFavorited(true);
                     }
                 }
@@ -83,22 +83,22 @@ const Recipe = () => {
             const likeData = {
                 recipeid: recipe.id,
             };
-
+    
             console.log(accessToken);
     
             if (!liked) {
                 await axios.post('http://127.0.0.1:8000/accounts/like/', likeData, config);
-                
+    
                 // Update local storage
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                storedUser.liked_recipes.push(recipe.id);
+                storedUser.liked_recipes.push({ id: recipe.id });
                 localStorage.setItem('user', JSON.stringify(storedUser));
             } else {
                 await axios.delete('http://127.0.0.1:8000/accounts/unlike/', { data: likeData, headers: config.headers });
-                
+    
                 // Update local storage
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                storedUser.liked_recipes = storedUser.liked_recipes.filter(id => id !== recipe.id);
+                storedUser.liked_recipes = storedUser.liked_recipes.filter(item => item.id !== recipe.id);
                 localStorage.setItem('user', JSON.stringify(storedUser));
             }
             setLiked(!liked);
@@ -106,7 +106,7 @@ const Recipe = () => {
             console.error('Error liking or unliking:', error);
         }
     };
-
+    
     const handleFavorite = async () => {
         try {
             const storedToken = localStorage.getItem('token');
@@ -125,14 +125,14 @@ const Recipe = () => {
     
                 // Update local storage
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                storedUser.favored_recipes.push(recipe.id);
+                storedUser.favored_recipes.push({ id: recipe.id });
                 localStorage.setItem('user', JSON.stringify(storedUser));
             } else {
                 await axios.delete('http://127.0.0.1:8000/accounts/unfavor/', { data: favoriteData, headers: config.headers });
     
                 // Update local storage
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                storedUser.favored_recipes = storedUser.favored_recipes.filter(id => id !== recipe.id);
+                storedUser.favored_recipes = storedUser.favored_recipes.filter(item => item.id !== recipe.id);
                 localStorage.setItem('user', JSON.stringify(storedUser));
             }
             setFavorited(!favorited);
