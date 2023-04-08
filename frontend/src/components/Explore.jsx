@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {BackTop, List, Rating, Spin, Typography} from "@douyinfe/semi-ui";
@@ -14,7 +14,10 @@ export const Explore = () => {
     const firstTime = useRef(true);
     const [loading, setLoading] = useState(true);
 
-    let next = 'http://127.0.0.1:8000/search/?sort=sort';
+    const [searchParams, setSearchParams] = useSearchParams();
+    const params = searchParams.get("search");
+
+    let next = `http://127.0.0.1:8000/search/?sort=sort&content=${params}`;
 
     useEffect(() => {
         if (!firstTime.current) return;
