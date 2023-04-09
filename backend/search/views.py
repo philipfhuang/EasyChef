@@ -27,7 +27,7 @@ class SearchView(ListAPIView):
         recipes = Recipe.objects.filter(Q(title__icontains=search_param) |
                                         Q(creator__username__icontains=search_param) |
                                         Q(cuisines__cuisine__name__icontains=search_param))
-        cooktime = self.request.GET.get('cookingtime')
+        cooktime = self.request.GET.get('cooktime')
         ingredients = self.request.GET.get('ingredient')
         diets = self.request.GET.get('diet')
         cuisines = self.request.GET.get('cuisine')
