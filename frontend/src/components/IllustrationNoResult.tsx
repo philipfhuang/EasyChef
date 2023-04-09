@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function NoResult(props: React.SVGProps<SVGSVGElement>) {
+function IllustrationNoResult(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
             width={200}
@@ -52,7 +52,7 @@ function NoResult(props: React.SVGProps<SVGSVGElement>) {
                 d="M166.556 154.913L170.458 147.944H164.326L160.735 154.356H160.423V154.913V167.735H166.556V154.913Z"
                 fill="#515151"
             />
-            <circle cx={45.5788} cy={38.675} r={33.1711} fill="#e0c0a2" />
+            <circle cx={45.5788} cy={38.675} r={33.1711} fill="#f1e3d5" />
             <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -92,4 +92,4 @@ function NoResult(props: React.SVGProps<SVGSVGElement>) {
     );
 }
 
-export default NoResult;
+export default IllustrationNoResult;
