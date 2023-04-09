@@ -21,29 +21,25 @@ export const Home = () => {
         async function getRecipes() {
             await axios.get('http://127.0.0.1:8000/search/?sort=sort')
                 .then(response => {
-                    setRecipes(response.data.results)
+                    setRecipes(response.data.results.slice(0, 6));
+                    setTopRecipes(response.data.results.slice(6));
                 })
 
-            let count = 3;
             let next = 'http://127.0.0.1:8000/search/?sort=sort&page=2';
-            while (count > 0 && next) {
-                await axios.get(next)
-                    .then(response => {
-                        setTopRecipes(prevState => {
-                            if (!prevState) {
-                                return [...response.data.results]
+            axios.get(next)
+                .then(response => {
+                    setTopRecipes(prevState => {
+                        if (!prevState) {
+                            return [...response.data.results]
+                        }
+                        response.data.results.forEach(recipe => {
+                            if (!prevState.includes(recipe)) {
+                                prevState.push(recipe)
                             }
-                            response.data.results.forEach(recipe => {
-                                if (!prevState.includes(recipe)) {
-                                    prevState.push(recipe)
-                                }
-                            })
-                            return prevState;
                         })
-                        next = response.data.next;
-                        count--;
+                        return prevState;
                     })
-            }
+                })
             setLoading();
         }
         getRecipes();
