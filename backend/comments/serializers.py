@@ -7,13 +7,13 @@ from .models import Comment, CommentImage, CommentVideo
 class CommentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentImage
-        fields = ('id', 'image')
+        fields = ('comment', 'image')
 
 
 class CommentVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentVideo
-        fields = ('id', 'video')
+        fields = ('comment', 'video')
 
 
 class CommentSerializer(serializers.ModelSerializer):
