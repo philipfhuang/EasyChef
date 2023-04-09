@@ -3,7 +3,8 @@ from rest_framework.generics import DestroyAPIView, ListAPIView, CreateAPIView, 
     RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from comments.serializers import CommentImageSerializer, CommentSerializer
+from comments.serializers import CommentImageSerializer, CommentSerializer, \
+    CommentVideoSerializer
 from comments.models import Comment, CommentImage, CommentVideo
 
 
@@ -52,7 +53,7 @@ class CommentImageDeleteView(DestroyAPIView):
 
 
 class CommentVideoCreateView(CreateAPIView):
-    serializer_class = CommentImageSerializer
+    serializer_class = CommentVideoSerializer
     permission_classes = [IsAuthenticated]
 
 
