@@ -1,7 +1,19 @@
 import {useNavigate, useSearchParams} from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {AutoComplete, BackTop, Button, InputNumber, List, Rating, Select, Spin, Typography} from "@douyinfe/semi-ui";
+import {
+    AutoComplete,
+    BackTop,
+    Button,
+    Empty,
+    InputNumber,
+    List,
+    Rating,
+    Select,
+    Spin,
+    Typography
+} from "@douyinfe/semi-ui";
+import {IllustrationNoResult} from '@douyinfe/semi-illustrations';
 import {IconArrowUp, IconSearch} from "@douyinfe/semi-icons";
 
 import './common.css'
@@ -27,20 +39,19 @@ export const SearchPage = () => {
 
     const [cookingtime, setCookingtime] = useState(0);
 
-    const [forceUpdate, setForceUpdate] = useState();
 
     useEffect(() => {
         const content = searchParams.get("search");
         let ingredient = searchParams.get("ingredient");
         let diet = searchParams.get("diet");
         let cuisine = searchParams.get("cuisine");
-        let cooktime = searchParams.get("cookingtime");
+        let cooktime = searchParams.get("cooktime");
         if (!ingredient) ingredient = '';
         if (!diet) diet = '';
         if (!cuisine) cuisine = '';
         if (!cooktime) cooktime = 0;
 
-        let next = `http://127.0.0.1:8000/search/?sort=sort&content=${content}&ingredient=${ingredient}&diet=${diet}&cuisine=${cuisine}&cookingtime=${cookingtime}`;
+        let next = `http://127.0.0.1:8000/search/?sort=sort&content=${content}&ingredient=${ingredient}&diet=${diet}&cuisine=${cuisine}&cooktime=${cooktime}`;
 
         if (!changeSearch.current) return;
         setRecipes(null);
@@ -134,7 +145,6 @@ export const SearchPage = () => {
     };
 
     const handleIngredientSearch = inputValue => {
-        let result = [];
         axios.get(`http://127.0.0.1:8000/search/filter/?content=${inputValue}&type=ingredient`)
             .then(response => {
                 setIngredientList(response.data.results);
@@ -146,7 +156,6 @@ export const SearchPage = () => {
     };
 
     const handleCuisineSearch = inputValue => {
-        let result = [];
         axios.get(`http://127.0.0.1:8000/search/filter/?content=${inputValue}&type=cuisine`)
             .then(response => {
                 setCuisineList(response.data.results);
@@ -158,7 +167,6 @@ export const SearchPage = () => {
     };
 
     const handleDietSearch = inputValue => {
-        let result = [];
         axios.get(`http://127.0.0.1:8000/search/filter/?content=${inputValue}&type=diet`)
             .then(response => {
                 setDietList(response.data.results);
@@ -269,6 +277,7 @@ export const SearchPage = () => {
                 </div>
             </div>
 
+            {recipes && recipes.length > 0 ?
             <List
                 style={{width:'100%', maxWidth:1200, margin: "0 auto", marginTop:5, marginBottom:50}}
                 grid={{
@@ -291,6 +300,13 @@ export const SearchPage = () => {
                     </List.Item>
                 )}
             />
+            : <Empty
+                    style={{marginTop: 50}}
+                    image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}
+                    title={'No Result'}
+                    description="Seems like there is no result that matches your search :("
+                />
+            }
             {loading ?
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
                     <Spin size='large'/>
