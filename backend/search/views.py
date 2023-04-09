@@ -1,11 +1,11 @@
 from django.db.models import Avg, Q
+from django.http import JsonResponse
+from django.views import View
 from rest_framework.generics import ListAPIView
 
-from accounts.models import User
 from comments.models import Comment
-from recipes.models import Cuisine, Recipe
+from recipes.models import Cuisine, Diet, Ingredient, Recipe
 from posts.serializers import RecipeSerializer
-from search.serializer import SearchSerializer
 
 
 # Create your views here.
@@ -50,10 +50,28 @@ class SearchView(ListAPIView):
         return recipes
 
 
-class SearchAidView(ListAPIView):
-    serializer_class = SearchSerializer
+class SearchAidView(View):
 
-    def get_queryset(self):
+    def get(self, request):
         search_param = self.request.GET.get('content')
+        data = {
+            'results': []
+        }
         recipes = Recipe.objects.filter(title__startswith=search_param)
-        return recipes
+        cuisines = Cuisine.objects.filter(name__startswith=search_param)
+        ingredients = Ingredient.objects.filter(name__startswith=search_param)
+        diets = Diet.objects.filter(name__startswith=search_param)
+        for recipe in recipes:
+            data['results'].append(recipe.title)
+        for cuisine in cuisines:
+            data['results'].append(cuisine.name)
+        for ingredient in ingredients:
+            data['results'].append(ingredient.name)
+        for diet in diets:
+            data['results'].append(diet.name)
+
+        data['results'] = data['results'][:5]
+
+        print(data['results'])
+
+        return JsonResponse(data)
