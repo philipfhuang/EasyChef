@@ -13,8 +13,8 @@ import {
     Spin,
     Typography
 } from "@douyinfe/semi-ui";
-import {IllustrationNoResult} from '@douyinfe/semi-illustrations';
 import {IconArrowUp, IconSearch} from "@douyinfe/semi-icons";
+import NoResult from "./NoResult.tsx";
 
 import './common.css'
 
@@ -302,9 +302,9 @@ export const SearchPage = () => {
             />
             : <Empty
                     style={{marginTop: 100}}
-                    image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}
+                    image={<NoResult style={{ width: 150, height: 150 }} />}
                     title={'No Result'}
-                    description="Seems like there is no result that matches your search :("
+                    description="Seems like there is no result that matches your search"
                 />
             }
             {loading ?
