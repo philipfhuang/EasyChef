@@ -10,13 +10,9 @@ import Home from "./components/Home";
 import CreateRecipe from "./components/CreateRecipe";
 import Explore from "./components/Explore";
 import SearchContext, {useSearcContext} from "./contexts/SearchContext";
+import SearchPage from "./components/SearchPage";
 
 function App() {
-    const expore = (
-        <SearchContext.Provider value={useSearcContext()}>
-            <Explore/>
-        </SearchContext.Provider>
-    )
     return (
         <BrowserRouter>
             <Routes>
@@ -26,8 +22,8 @@ function App() {
                 <Route path="/signup" element={<Signup/>}/>
                 <Route path="/recipe" element={<Recipe/>}/>
                 <Route path="/createRecipe" element={<CreateRecipe/>}/>
-                <Route path="/explore" element={expore}/>
-                <Route path="/search" element={expore}/>
+                <Route path="/explore" element={<Explore/>}/>
+                <Route path="/search" element={<SearchPage/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

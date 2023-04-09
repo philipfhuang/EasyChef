@@ -7,7 +7,6 @@ import {useNavigate} from "react-router-dom";
 export const Search = () => {
     const [stringData, setStringData] = useState([]);
     const [value, setValue] = useState('');
-
     let navigate = useNavigate();
 
     var timer;
@@ -31,6 +30,9 @@ export const Search = () => {
     const submitSearch = () => {
         navigate(`/search?search=${value}`);
     }
+
+    if (window.location.pathname === '/search') return <></>
+
     return (
         <AutoComplete
             data={stringData}

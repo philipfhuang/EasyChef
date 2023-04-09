@@ -43,7 +43,7 @@ export const MyNav = () => {
                     items={[
                         {itemKey: 'home', text: 'Home'},
                         {itemKey: 'explore', text: 'Explore'},
-                        {itemKey: 'search', text: <SearchContext.Provider value={useSearcContext()}> <Search/> </SearchContext.Provider>, style: {paddingTop: '2px', paddingBottom: '0'}},
+                        {itemKey: 'search', text: <Search/>, style: {paddingTop: '2px', paddingBottom: '0'}},
                     ]}
                     // onSelect={key => console.log(key)}
                     header={{

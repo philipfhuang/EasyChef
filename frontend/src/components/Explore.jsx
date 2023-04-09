@@ -14,10 +14,7 @@ export const Explore = () => {
     const firstTime = useRef(true);
     const [loading, setLoading] = useState(true);
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const params = searchParams.get("search");
-
-    let next = `http://127.0.0.1:8000/search/?sort=sort&content=${params}`;
+    let next = 'http://127.0.0.1:8000/search/?sort=sort';
 
     useEffect(() => {
         if (!firstTime.current) return;
@@ -119,7 +116,7 @@ export const Explore = () => {
                 )}
             />
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
-                {loading ? <Spin size='large' tip='Loading'/> : <></>}
+                {loading ? <Spin size='large'/> : <></>}
             </div>
             <BackTop style={topStyle}>
                 <IconArrowUp />

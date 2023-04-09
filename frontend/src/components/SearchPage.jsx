@@ -18,10 +18,6 @@ export const SearchPage = () => {
     const [stringData, setStringData] = useState([]);
     const [value, setValue] = useState('');
 
-    const [ingredLoading, setIngredLoadingLoading] = useState(false);
-    const [ingredList, setIngredList] = useState([]);
-    const [ingredValue, setIngredValue] = useState('');
-
 
     useEffect(() => {
         const params = searchParams.get("search");
@@ -80,7 +76,7 @@ export const SearchPage = () => {
             }
         });
 
-    }, [])
+    }, [searchParams])
 
     const toRecipe = (id) => {
         navigate(`/recipe?id=${id}`)
@@ -119,28 +115,7 @@ export const SearchPage = () => {
     };
 
     const submitSearch = () => {
-        navigate(`/search?search=${value}`);
-    };
-
-    const handleIngredMultipleChange = newValue => {
-        setIngredValue(newValue);
-    };
-
-    const handleIngredSearch = inputValue => {
-        setLoading(true);
-        let result = [];
-        if (inputValue) {
-            let length = Math.ceil(Math.random() * 100);
-            result = Array.from({ length }, (v, i) => {
-                return { value: inputValue + i, label: `相近业务 ${inputValue}${i}`, type: i + 1 };
-            });
-            setTimeout(() => {
-                setLoading(false);
-                setIngredList(result);
-            }, 1000);
-        } else {
-            setLoading(false);
-        }
+        setSearchParams({search: value});
     };
 
     return (
@@ -165,19 +140,7 @@ export const SearchPage = () => {
                     }}
                 />
                 <div style={{marginLeft: 20}}>
-                    <Select
-                        style={{ width: 150 }}
-                        filter
-                        remote
-                        onChangeWithObject
-                        multiple
-                        value={value}
-                        onSearch={handleIngredSearch}
-                        optionList={ingredList}
-                        loading={ingredLoading}
-                        onChange={handleIngredMultipleChange}
-                        emptyContent={null}
-                    ></Select>
+
                 </div>
             </div>
 
@@ -204,7 +167,7 @@ export const SearchPage = () => {
                 )}
             />
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
-                {loading ? <Spin size='large' tip='Loading'/> : <></>}
+                {loading ? <Spin size='large'/> : <></>}
             </div>
             <BackTop style={topStyle}>
                 <IconArrowUp />
