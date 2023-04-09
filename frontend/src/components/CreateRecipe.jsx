@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { AutoComplete } from '@douyinfe/semi-ui';
+import { IconSearch } from '@douyinfe/semi-icons';
+import { Input, Icon } from 'antd';
 
 const CreateRecipe = () => {
     const [title, setTitle] = useState('');
@@ -11,10 +14,66 @@ const CreateRecipe = () => {
     const [cuisine, setCuisine] = useState('');
     const [diets, setDiets] = useState([]);
     const [cuisines, setCuisines] = useState([]);
-    const [recipeId, setRecipeId] = useState(null);
     const [coverFile, setCoverFile] = useState(null);
-    const [stepIds, setStepIds] = useState([]);
-    const [stepVideos, setStepVideos] = useState([]);
+    const [dietSearchResults, setDietSearchResults] = useState([]);
+    const [cuisineSearchResults, setCuisineSearchResults] = useState([]);
+    const [ingredientSearchResults, setIngredientSearchResults] = useState([]);
+
+    const searchIngredient = async (query, index) => {
+        if (!query) return;
+        const storedToken = localStorage.getItem('token');
+        const accessToken = JSON.parse(storedToken).access;
+    
+        const config = {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        };
+    
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/search/filter/?type=ingredient&content=${query}`, config);
+            const updatedSearchResults = [...ingredientSearchResults];
+            updatedSearchResults[index] = Array.isArray(response.data.results) ? response.data.results : [];
+            setIngredientSearchResults(updatedSearchResults);
+        } catch (error) {
+            console.error('Error searching for ingredients:', error);
+            alert('Failed to search for ingredients.');
+        }
+    };
+
+    const searchCuisine = async (query) => {
+        if (!query) return;
+        const storedToken = localStorage.getItem('token');
+        const accessToken = JSON.parse(storedToken).access;
+    
+        const config = {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        };
+    
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/search/filter/?type=cuisine&content=${query}`, config);
+            setCuisineSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
+        } catch (error) {
+            console.error('Error searching for cuisines:', error);
+            alert('Failed to search for cuisines.');
+        }
+    };
+
+    const searchDiet = async (query) => {
+        if (!query) return;
+        const storedToken = localStorage.getItem('token');
+        const accessToken = JSON.parse(storedToken).access;
+
+        const config = {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        };
+
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/search/filter/?type=diet&content=${query}`, config);
+            setDietSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
+        } catch (error) {
+            console.error('Error searching for diets:', error);
+            alert('Failed to search for diets.');
+        }
+    };
 
     const addStepVideo = async (stepId, videoFiles) => {
         if (!stepId || !videoFiles || videoFiles.length === 0) {
@@ -118,17 +177,19 @@ const CreateRecipe = () => {
     };
     
 
-    const addDiet = () => {
-        if (diet) {
-            setDiets([...diets, diet]);
-            setDiet('');
+    const addDiet = (item) => {
+        if (typeof item === 'object') {
+            setDiets([...diets, item.label]);
+        } else if (typeof item === 'string' && item.trim()) {
+            setDiets([...diets, item]);
         }
     };
 
-    const addCuisine = () => {
-        if (cuisine) {
-            setCuisines([...cuisines, cuisine]);
-            setCuisine('');
+    const addCuisine = (item) => {
+        if (typeof item === 'object') {
+            setCuisines([...cuisines, item.label]);
+        } else if (typeof item === 'string' && item.trim()) {
+            setCuisines([...cuisines, item]);
         }
     };
 
@@ -190,6 +251,8 @@ const CreateRecipe = () => {
             steps,
             cooking_time: parseInt(cookingTime)
         };
+
+        console.log(recipeData)
     
         try {
             const response = await axios.post('http://127.0.0.1:8000/posts/recipe/', recipeData, config);
@@ -222,46 +285,105 @@ const CreateRecipe = () => {
                 Cooking Time:
                 <input type="text" value={cookingTime} onChange={(e) => setCookingTime(e.target.value)} />
             </label>
-
+            <div>
             <label>
-            Diet:
-            <input type="text" value={diet} onChange={(e) => setDiet(e.target.value)} />
-            <button type="button" onClick={addDiet}>
-                Add Diet
-            </button>
-        </label>
-        <div>
-            {diets.map((dietItem, index) => (
-                <div key={index}>
-                    <p>{dietItem}</p>
-                    <button type="button" onClick={() => {
-                        const updatedDiets = [...diets];
-                        updatedDiets.splice(index, 1);
-                        setDiets(updatedDiets);
-                    }}>Delete Diet</button>
-                </div>
-            ))}
+                Diet:
+                <Input
+                    value={diet}
+                    onChange={(e) => {
+                        setDiet(e.target.value);
+                        searchDiet(e.target.value);
+                    }}
+                    onPressEnter={() => addDiet(diet)}
+                />
+<button type="button" onClick={() => addDiet(diet)}>
+    Add Diet
+</button>
+            </label>
+<div>
+    {dietSearchResults.map((result, index) => (
+        <div
+            key={index}
+            onClick={() => {
+                addDiet(result);
+                setDietSearchResults([]);
+            }}
+        >
+            {result.label}
         </div>
+    ))}
+</div>
+<ul>
+    {diets.map((item, index) => (
+        <li key={index}>{item}</li>
+    ))}
+</ul>
+        </div>
+        <div>
+    {diets.map((dietItem, index) => (
+        <div key={index}>
+            <button
+                type="button"
+                onClick={() => {
+                    const updatedDiets = [...diets];
+                    updatedDiets.splice(index, 1);
+                    setDiets(updatedDiets);
+                }}
+            >
+                Delete Diet
+            </button>
+        </div>
+    ))}
+</div>
 
-        <label>
-            Cuisine:
-            <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
-            <button type="button" onClick={addCuisine}>
-                Add Cuisine
-            </button>
-        </label>
-        <div>
-            {cuisines.map((cuisineItem, index) => (
-                <div key={index}>
-                    <p>{cuisineItem}</p>
-                    <button type="button" onClick={() => {
-                        const updatedCuisines = [...cuisines];
-                        updatedCuisines.splice(index, 1);
-                        setCuisines(updatedCuisines);
-                    }}>Delete Cuisine</button>
-                </div>
-            ))}
+<label>
+    Cuisine:
+    <Input
+        value={cuisine}
+        onChange={(e) => {
+            setCuisine(e.target.value);
+            searchCuisine(e.target.value);
+        }}
+        onPressEnter={() => addCuisine(cuisine)}
+    />
+    <button type="button" onClick={() => addCuisine(cuisine)}>
+        Add Cuisine
+    </button>
+</label>
+<div>
+    {cuisineSearchResults.map((result, index) => (
+        <div
+            key={index}
+            onClick={() => {
+                addCuisine(result);
+                setCuisineSearchResults([]);
+            }}
+        >
+            {result.label}
         </div>
+    ))}
+</div>
+<ul>
+    {cuisines.map((item, index) => (
+        <li key={index}>{item}</li>
+    ))}
+</ul>
+<div>
+    {cuisines.map((cuisineItem, index) => (
+        <div key={index}>
+            <button
+                type="button"
+                onClick={() => {
+                    const updatedCuisines = [...cuisines];
+                    updatedCuisines.splice(index, 1);
+                    setCuisines(updatedCuisines);
+                }}
+            >
+                Delete Cuisine
+            </button>
+        </div>
+    ))}
+</div>
             
             {/* Ingredient Quantities */}
             {ingredientQuantities.map((ingredientQuantity, index) => (
@@ -269,11 +391,29 @@ const CreateRecipe = () => {
                     <label>
                         Ingredient:
                         <input
-                            type="text"
-                            value={ingredientQuantity.ingredient}
-                            onChange={(e) => updateIngredientQuantity(index, 'ingredient', e.target.value)}
-                        />
+    type="text"
+    value={ingredientQuantity.ingredient}
+    onChange={(e) => {
+        updateIngredientQuantity(index, 'ingredient', e.target.value);
+        searchIngredient(e.target.value, index);
+    }}
+/>
                     </label>
+                    <div>
+    {ingredientSearchResults[index]?.map((result, idx) => (
+        <div
+            key={idx}
+            onClick={() => {
+                updateIngredientQuantity(index, 'ingredient', result.label);
+                const updatedSearchResults = [...ingredientSearchResults];
+                updatedSearchResults[index] = [];
+                setIngredientSearchResults(updatedSearchResults);
+            }}
+        >
+            {result.label}
+        </div>
+    ))}
+</div>
                     <label>
                         Quantity:
                         <input
