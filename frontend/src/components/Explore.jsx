@@ -12,37 +12,33 @@ export const Explore = () => {
 
     const [recipes, setRecipes] = useState(null);
     const firstTime = useRef(true);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    let next = 'http://127.0.0.1:8000/search/?sort=sort';
+    var next = 'http://127.0.0.1:8000/search/?sort=sort';
 
     useEffect(() => {
         if (!firstTime.current) return;
         firstTime.current = false;
 
         async function getRecipes() {
-            let count = 3;
-            while (count > 0 && next) {
-                await axios.get(next)
-                    .then(response => {
-                        setRecipes(prevState => {
-                            if (!prevState) {
-                                return [...response.data.results]
-                            }
-                            response.data.results.forEach(recipe => {
-                                if (!prevState.includes(recipe)) {
-                                    prevState.push(recipe)
-                                }
-                            })
-                            return prevState;
-                        })
-                        next = response.data.next;
-                        if (!next) {
-                            setLoading(false);
+            axios.get(next)
+                .then(response => {
+                    setRecipes(prevState => {
+                        if (!prevState) {
+                            return [...response.data.results]
                         }
-                        count--;
+                        response.data.results.forEach(recipe => {
+                            if (!prevState.includes(recipe)) {
+                                prevState.push(recipe)
+                            }
+                        })
+                        return prevState;
                     })
-            }
+                    next = response.data.next;
+                    if (!next) {
+                        setLoading(false);
+                    }
+                })
         }
         getRecipes();
 
@@ -52,9 +48,12 @@ export const Explore = () => {
                     setLoading(false);
                     return;
                 }
+                setLoading(true);
                 axios.get(next)
                     .then(response => {
+                        console.log("get data")
                         setRecipes(prevState => {
+                            console.log("setdata")
                             if (!prevState) {
                                 return [...response.data.results]
                             }
@@ -115,9 +114,13 @@ export const Explore = () => {
                     </List.Item>
                 )}
             />
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
-                {loading ? <Spin size='large'/> : <></>}
-            </div>
+
+                {loading ?
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
+                        <Spin size='large'/>
+                    </div>
+                    : <></>}
+
             <BackTop style={topStyle}>
                 <IconArrowUp />
             </BackTop>

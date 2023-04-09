@@ -1,7 +1,8 @@
 import {useNavigate, useSearchParams} from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {AutoComplete, BackTop, List, Rating, Select, Spin, Typography} from "@douyinfe/semi-ui";
+import { debounce } from 'lodash-es';
+import {AutoComplete, BackTop, Button, InputNumber, List, Rating, Select, Spin, Typography} from "@douyinfe/semi-ui";
 import {IconArrowUp, IconSearch} from "@douyinfe/semi-icons";
 
 import './common.css'
@@ -11,44 +12,59 @@ export const SearchPage = () => {
     let navigate = useNavigate();
 
     const [recipes, setRecipes] = useState(null);
-    const firstTime = useRef(true);
     const changeSearch = useRef(true);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const [stringData, setStringData] = useState([]);
     const [value, setValue] = useState('');
 
+    const [ingredientValue, setIngredientValue] = useState('');
+    const [dietValue, setDietValue] = useState('');
+    const [cuisineValue, setCuisineValue] = useState('');
+
+    const [ingredientList, setIngredientList] = useState([]);
+    const [dietList, setDietList] = useState([]);
+    const [cuisineList, setCuisineList] = useState([]);
+
+    const [cookingtime, setCookingtime] = useState(0);
+
+    const [forceUpdate, setForceUpdate] = useState();
 
     useEffect(() => {
-        const params = searchParams.get("search");
-        let next = `http://127.0.0.1:8000/search/?sort=sort&content=${params}`;
+        const content = searchParams.get("search");
+        let ingredient = searchParams.get("ingredient");
+        let diet = searchParams.get("diet");
+        let cuisine = searchParams.get("cuisine");
+        let cooktime = searchParams.get("cookingtime");
+        if (!ingredient) ingredient = '';
+        if (!diet) diet = '';
+        if (!cuisine) cuisine = '';
+        if (!cooktime) cooktime = 0;
 
-        if (!firstTime.current && !changeSearch.current) return;
-        firstTime.current = false;
+        let next = `http://127.0.0.1:8000/search/?sort=sort&content=${content}&ingredient=${ingredient}&diet=${diet}&cuisine=${cuisine}&cookingtime=${cookingtime}`;
+
+        if (!changeSearch.current) return;
+        setRecipes(null);
+        changeSearch.current = false;
 
         async function getRecipes() {
-            let count = 3;
-            while (count > 0 && next) {
-                await axios.get(next)
-                    .then(response => {
-                        setRecipes(prevState => {
-                            if (!prevState || changeSearch.current) {
-                                return [...response.data.results]
-                            }
-                            response.data.results.forEach(recipe => {
-                                if (!prevState.includes(recipe)) {
-                                    prevState.push(recipe)
-                                }
-                            })
-                            return prevState;
-                        })
-                        next = response.data.next;
-                        if (!next) {
-                            setLoading(false);
+            axios.get(next)
+                .then(response => {
+                    setRecipes(prevState => {
+                        console.log("seting state");
+                        if (!prevState || changeSearch.current) {
+                            console.log("firsttime");
+                            return [...response.data.results]
                         }
-                        count--;
+                        response.data.results.forEach(recipe => {
+                            if (!prevState.includes(recipe)) {
+                                prevState.push(recipe)
+                            }
+                        })
+                        return prevState;
                     })
-            }
+                    next = response.data.next;
+                })
         }
         getRecipes();
 
@@ -58,18 +74,16 @@ export const SearchPage = () => {
                     setLoading(false);
                     return;
                 }
+                setLoading(true);
                 axios.get(next)
                     .then(response => {
                         setRecipes(prevState => {
                             if (!prevState) {
-                                return [...response.data.results]
+                                console.log("firsttime");
+                                return response.data.results
                             }
-                            response.data.results.forEach(recipe => {
-                                if (!prevState.includes(recipe)) {
-                                    prevState.push(recipe)
-                                }
-                            })
-                            return prevState;
+                            console.log("not firsttime");
+                            return [...prevState, ...response.data.results]
                         })
                         next = response.data.next;
                     })
@@ -96,31 +110,102 @@ export const SearchPage = () => {
         bottom: 100,
     };
 
-    var timer;
     const handleStringSearch = async (value) => {
         if (!value) return;
-        if (timer) {
-            clearTimeout(timer);
-        }
-        timer = setTimeout(async () => {
-            await axios.get(`http://127.0.0.1:8000/search/aid/?content=${value}`)
-                .then(response => {
-                    setStringData(response.data.results);
-                })
-        }, 500)
+        await axios.get(`http://127.0.0.1:8000/search/aid/?content=${value}`)
+            .then(response => {
+                setStringData(response.data.results);
+            })
     };
 
     const handleChange = value => {
         setValue(value);
     };
 
-    const submitSearch = () => {
+    const submitSearch = async () => {
+        if (!value) return;
+        console.log(value);
+        changeSearch.current = true;
+        setRecipes(null);
         setSearchParams({search: value});
     };
 
+    const handleIngredientMultipleChange = newValue => {
+        setIngredientValue(newValue);
+    };
+
+    const handleIngredientSearch = inputValue => {
+        let result = [];
+        axios.get(`http://127.0.0.1:8000/search/filter/?content=${inputValue}&type=ingredient`)
+            .then(response => {
+                setIngredientList(response.data.results);
+            })
+    };
+
+    const handleCuisineMultipleChange = newValue => {
+        setCuisineValue(newValue);
+    };
+
+    const handleCuisineSearch = inputValue => {
+        let result = [];
+        axios.get(`http://127.0.0.1:8000/search/filter/?content=${inputValue}&type=cuisine`)
+            .then(response => {
+                setCuisineList(response.data.results);
+            })
+    };
+
+    const handleDietMultipleChange = newValue => {
+        setDietValue(newValue);
+    };
+
+    const handleDietSearch = inputValue => {
+        let result = [];
+        axios.get(`http://127.0.0.1:8000/search/filter/?content=${inputValue}&type=diet`)
+            .then(response => {
+                setDietList(response.data.results);
+            })
+    };
+
+    const submitFilter = () => {
+        let params = '';
+        if (value) {
+            params += `&search=${value}`;
+        }
+        if (ingredientValue.length > 0) {
+            params += '&ingredient=';
+            ingredientValue.forEach(ingredient => {
+                params += `${ingredient.value},`;
+            })
+            params = params.slice(0, -1);
+        }
+        if (dietValue.length > 0) {
+            params += '&diet=';
+            dietValue.forEach(diet => {
+                params += `${diet.value},`;
+            })
+            params = params.slice(0, -1);
+        }
+        if (cuisineValue.length > 0) {
+            params += '&cuisine=';
+            cuisineValue.forEach(cuisine => {
+                params += `${cuisine.value},`;
+            })
+            params = params.slice(0, -1);
+        }
+        if (cookingtime) {
+            params += `&cooktime=${cookingtime}`;
+        }
+
+        if (!params || params.slice(1).replace(/\s/g, "+") === window.location.search.slice(1)) return;
+
+        changeSearch.current = true;
+        setSearchParams(params);
+        setRecipes(null);
+    }
+
     return (
         <>
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100, flexDirection:'column'}}>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 150, flexDirection:'column', marginTop:10}}>
                 <AutoComplete
                     size={'large'}
                     data={stringData}
@@ -139,13 +224,54 @@ export const SearchPage = () => {
                         }
                     }}
                 />
-                <div style={{marginLeft: 20}}>
-
+                <div style={{marginTop:20, width:605, display:"flex", justifyContent:"space-between",
+                     flexFlow: "row wrap"}}>
+                    <Select
+                        style={{flex:"0 0 49%"}}
+                        filter
+                        remote
+                        onChangeWithObject
+                        multiple
+                        value={ingredientValue}
+                        onSearch={handleIngredientSearch}
+                        optionList={ingredientList}
+                        onChange={handleIngredientMultipleChange}
+                        emptyContent={null}
+                        placeholder={'Ingredient'}
+                    ></Select>
+                    <Select
+                        style={{flex:"0 0 49%"}}
+                        filter
+                        remote
+                        onChangeWithObject
+                        multiple
+                        value={cuisineValue}
+                        onSearch={handleCuisineSearch}
+                        optionList={cuisineList}
+                        onChange={handleCuisineMultipleChange}
+                        emptyContent={null}
+                        placeholder={'Cuisine'}
+                    ></Select>
+                    <Select
+                        style={{flex:"0 0 49%", marginTop:10}}
+                        filter
+                        remote
+                        onChangeWithObject
+                        multiple
+                        value={dietValue}
+                        onSearch={handleDietSearch}
+                        optionList={dietList}
+                        onChange={handleDietMultipleChange}
+                        emptyContent={null}
+                        placeholder={'Diet'}
+                    ></Select>
+                    <InputNumber suffix={'minutes'} min={1} style={{flex:"0 0 30%", marginTop:10}} onChange={setCookingtime}/>
+                    <Button theme='light' type='tertiary' style={{flex:"0 0 16%", marginTop:10}} onClick={submitFilter}>Apply</Button>
                 </div>
             </div>
 
             <List
-                style={{width:'100%', maxWidth:1200, margin: "0 auto", marginTop:10}}
+                style={{width:'100%', maxWidth:1200, margin: "0 auto", marginTop:5, marginBottom:50}}
                 grid={{
                     gutter: 16,
                     span: 8,
@@ -166,9 +292,11 @@ export const SearchPage = () => {
                     </List.Item>
                 )}
             />
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
-                {loading ? <Spin size='large'/> : <></>}
-            </div>
+            {loading ?
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
+                    <Spin size='large'/>
+                </div>
+                : <></>}
             <BackTop style={topStyle}>
                 <IconArrowUp />
             </BackTop>
