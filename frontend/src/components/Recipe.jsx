@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { IoHeartOutline, IoHeartSharp, IoBookmarkOutline, IoBookmarkSharp, IoListOutline, IoStarOutline } from 'react-icons/io5';
 import axios from 'axios';
 import './Recipe.css';
+import { Image } from '@douyinfe/semi-ui';
 
 
 
@@ -14,13 +16,14 @@ const Recipe = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [nextPage, setNextPage] = useState(null);
     const [previousPage, setPreviousPage] = useState(null);
+    const [imageFiles, setImageFiles] = useState([]);
+    const [videoFiles, setVideoFiles] = useState([]);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/posts/recipe/45/');
+                const response = await axios.get('http://127.0.0.1:8000/posts/recipe/46/');
                 setRecipe(response.data);
-                setComments(response.data.comments);
     
                 const storedUser = JSON.parse(localStorage.getItem('user'));
                 console.log(storedUser);
@@ -40,11 +43,48 @@ const Recipe = () => {
             } catch (error) {
                 console.error('Error fetching recipe:', error);
             }
-            await fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/45/`);
+            await fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/46/`);
+
 
         }
         fetchData();
     }, []);
+
+    const handleAddImage = async (commentId, file) => {
+        try {
+          const formData = new FormData();
+          formData.append('comment', commentId);
+          formData.append('image', file);
+      
+          const storedToken = localStorage.getItem('token');
+          const accessToken = JSON.parse(storedToken).access;
+          const config = {
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'multipart/form-data' }
+          };
+      
+          await axios.post('http://127.0.0.1:8000/comments/commentImage/', formData, config);
+        } catch (error) {
+          console.error('Error uploading image:', error);
+        }
+      };
+      
+      const handleAddVideo = async (commentId, file) => {
+        try {
+          const formData = new FormData();
+          formData.append('comment', commentId);
+          formData.append('video', file);
+      
+          const storedToken = localStorage.getItem('token');
+          const accessToken = JSON.parse(storedToken).access;
+          const config = {
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'multipart/form-data' }
+          };
+      
+          await axios.post('http://127.0.0.1:8000/comments/commentVideo/', formData, config);
+        } catch (error) {
+          console.error('Error uploading video:', error);
+        }
+      };
 
     const fetchComments = async (url) => {
         try {
@@ -171,19 +211,41 @@ const Recipe = () => {
         try {
             const storedToken = localStorage.getItem('token');
             const accessToken = JSON.parse(storedToken).access;
-
+    
             const config = {
                 headers: { Authorization: `Bearer ${accessToken}` }
             };
-
+    
             const commentData = {
                 recipeid: recipe.id,
                 rating: rating,
                 content: newComment
             };
-
-            await axios.post('http://127.0.0.1:8000/comments/', commentData, config);
+    
+            const response = await axios.post('http://127.0.0.1:8000/comments/', commentData, config);
+            const commentId = response.data.id;
+    
+            // Upload images
+            for (let i = 0; i < imageFiles.length; i++) {
+                const imageData = new FormData();
+                imageData.append('comment', commentId);
+                imageData.append('image', imageFiles[i]);
+    
+                await axios.post('http://127.0.0.1:8000/comments/commentImage/', imageData, config);
+            }
+    
+            // Upload videos
+            for (let i = 0; i < videoFiles.length; i++) {
+                const videoData = new FormData();
+                videoData.append('comment', commentId);
+                videoData.append('video', videoFiles[i]);
+    
+                await axios.post('http://127.0.0.1:8000/comments/commentVideo/', videoData, config);
+            }
+    
             setNewComment('');
+            setImageFiles([]);
+            setVideoFiles([]);
         } catch (error) {
             console.error('Error adding comment:', error);
         }
@@ -191,172 +253,109 @@ const Recipe = () => {
 
     if (!recipe) return <div>Loading...</div>;
 
-    // return (
-    //     <div className="recipe-container">
-    //         <h1>{recipe.title}</h1>
-    //         {recipe.cover ? (
-    //             <img src={recipe.cover} alt={recipe.title} />
-    //         ) : (
-    //             <p>No cover image available</p>
-    //         )}
-    //         <p>Description: {recipe.description}</p>
-    //         <p>Creator: {recipe.creator.username}</p>
-    //         <p>Cooking time: {recipe.cooking_time} minutes</p>
-    //         <p>Created Date: {recipe.created_at.slice(0, 10)}</p>
-    //         <p>Edited Date: {recipe.updated_at.slice(0, 10)}</p>
-    //         <h2>Cuisines:</h2>
-    //         <ul>
-    //             {recipe.cuisines.map(cuisine => (
-    //                 <li key={cuisine.id}>
-    //                     {cuisine.cuisine.name}
-    //                 </li>
-    //             ))}
-    //         </ul>
-    //         <h2>Diets:</h2>
-    //         <ul>
-    //             {recipe.diets.map(diet => (
-    //                 <li key={diet.id}>
-    //                     {diet.diet.name}
-    //                 </li>
-    //             ))}
-    //         </ul>
-    //         <h2>Ingredients:</h2>
-    //         <ul>
-    //             {recipe.ingredient_quantities.map(ingredient => (
-    //                 <li key={ingredient.id}>
-    //                     {ingredient.quantity} {ingredient.unit.name} of {ingredient.ingredient.name}
-    //                 </li>
-    //             ))}
-    //         </ul>
-    //         <h2>Steps:</h2>
-    //         <ol>
-    //             {recipe.steps.map(step => (
-    //                 <li key={step.id}>
-    //                     {step.content}
-    //                     {step.images.map(image => (
-    //                         <img key={image.id} src={image.image} alt={image.image} />
-    //                     ))}
-    //                 </li>
-    //             ))}
-    //         </ol>
-    //         <div>
-    //             <button onClick={handleLike}>{liked ? 'Unlike' : 'Like'}</button>
-    //             <button onClick={handleFavorite}>{favorited ? 'Unfavorite' : 'Favorite'}</button>
-    //             <button onClick={handleAddToShoppingList}>Add to Shopping List</button>
-    //         </div>
-    //         <div>
-    //             <input
-    //                 type="text"
-    //                 placeholder="Add a comment"
-    //                 value={newComment}
-    //                 onChange={e => setNewComment(e.target.value)}
-    //             />
-    //             {/* Add a dropdown or input to set the rating */}
-    //             <select value={rating} onChange={e => setRating(Number(e.target.value))}>
-    //                 {[1, 2, 3, 4, 5].map(value => (
-    //                     <option key={value} value={value}>
-    //                         {value}
-    //                     </option>
-    //                 ))}
-    //             </select>
-    //             <button onClick={handleAddComment}>Add Comment</button>
-    //         </div>
-
-    //         <h2>Comments:</h2>
-
-    //         {comments.length > 0 ? (
-    //             <>
-    //                 <ul>
-    //                     {comments.map(comment => (
-    //                         !comment.content ? (
-    //                             <li key={comment.id}>
-    //                                 This user did not comment. {comment.rating}
-    //                             </li>
-    //                         ) : (
-    //                             <li key={comment.id}>
-    //                                 {comment.content} {comment.rating}
-    //                             </li>
-    //                         )))}
-    //                 </ul>
-    //                 <div>
-    //                     <button disabled={!previousPage} onClick={handlePreviousPage}>Previous</button>
-    //                     <span>Page {currentPage}</span>
-    //                     <button disabled={!nextPage} onClick={handleNextPage}>Next</button>
-    //                 </div>
-    //             </>
-    //         ) : (
-    //             <p>No comments available</p>
-    //         )}
-    //     </div>
-    // );
-
-
     return (
         <div className="container">
             <h1>{recipe.title}</h1>
+            <div className="recipe-top">
+            <div>
             {recipe.cover ? (
-                <img src={recipe.cover} alt={recipe.title} />
+                <Image src={recipe.cover} alt={recipe.title} />
             ) : (
                 <p>No cover image available</p>
             )}
+            </div>
             <div className="recipe-info">
-                <p>Description: {recipe.description}</p>
-                <p>Creator: {recipe.creator.username}</p>
-                <p>Cooking time: {recipe.cooking_time} minutes</p>
-                <p>Created Date: {recipe.created_at.slice(0, 10)}</p>
-                <p>Edited Date: {recipe.updated_at.slice(0, 10)}</p>
+                <p><span>Description:</span> {recipe.description}</p>
+                <p><span>Creator:</span> {recipe.creator.username}</p>
+                <p><span>Cooking time:</span> {recipe.cooking_time} minutes</p>
+                <p><span>Created Date:</span> {recipe.created_at.slice(0, 10)}</p>
+                <p><span>Edited Date:</span> {recipe.updated_at.slice(0, 10)}</p>
+            </div>
             </div>
     
-            <h2>Cuisines:</h2>
-            <ul>
-                {recipe.cuisines.map(cuisine => (
-                    <li key={cuisine.id}>
+            <div class="recipe-sections">
+                <div class="recipe-section">
+                    <h2>Cuisines:</h2>
+                    <ul>
+                    {recipe.cuisines.map(cuisine => (
+                        <li key={cuisine.id}>
                         {cuisine.cuisine.name}
-                    </li>
-                ))}
-            </ul>
-            <h2>Diets:</h2>
-            <ul>
-                {recipe.diets.map(diet => (
-                    <li key={diet.id}>
+                        </li>
+                    ))}
+                    </ul>
+                </div>
+                <div class="recipe-section">
+                    <h2>Diets:</h2>
+                    <ul>
+                    {recipe.diets.map(diet => (
+                        <li key={diet.id}>
                         {diet.diet.name}
-                    </li>
-                ))}
-            </ul>
-            <h2>Ingredients:</h2>
-            <ul>
-                {recipe.ingredient_quantities.map(ingredient => (
-                    <li key={ingredient.id}>
+                        </li>
+                    ))}
+                    </ul>
+                </div>
+                <div class="recipe-section">
+                    <h2>Ingredients:</h2>
+                    <ul>
+                    {recipe.ingredient_quantities.map(ingredient => (
+                        <li key={ingredient.id}>
                         {ingredient.quantity} {ingredient.unit.name} of {ingredient.ingredient.name}
-                    </li>
-                ))}
-            </ul>
-            <h2>Steps:</h2>
-            <ol>
-                {recipe.steps.map(step => (
-                    <li key={step.id}>
-                        {step.content}
-                        {step.images.map(image => (
-                            <img key={image.id} src={image.image} alt={image.image} />
+                        </li>
+                    ))}
+                    </ul>
+                </div>
+                </div>
+
+                <div class="recipe-steps">
+                    <h2>Steps:</h2>
+                    <ol>
+                        {recipe.steps.map(step => (
+                        <li key={step.id}>
+                            <div class="recipe-step">
+                            <div class="recipe-step-content">
+                                {step.content}
+                            </div>
+                            <div class="recipe-step-media">
+                                {step.images.map(image => (
+                                <Image
+                                    key={image.id}
+                                    src={image.image}
+                                    alt={image.image}
+                                    width={250}
+                                    height={250}
+                                    class="recipe-step-image"
+                                />
+                                ))}
+                                <br />
+                                {step.videos.map(video => (
+                                <video
+                                    key={video.id}
+                                    class="recipe-step-video"
+                                    controls
+                                >
+                                    <source src={video.video} type="video/ogg" />
+                                    Your browser does not support the video tag.
+                                </video>
+                                ))}
+                            </div>
+                            </div>
+                        </li>
                         ))}
-                        {step.videos.map(video => (
-                            <video width="320" height="240" controls>
-                            <source src={video.video} type="video/ogg" />
-                            Your browser does not support the video tag.
-                        </video>
-                        ))}
-                    </li>
-                ))}
-            </ol>
+                    </ol>
+                </div>
 
     
             <div className="recipe-actions">
-                <button onClick={handleLike}>{liked ? 'Unlike' : 'Like'}</button>
-                <button onClick={handleFavorite}>{favorited ? 'Unfavorite' : 'Favorite'}</button>
-                <button onClick={handleAddToShoppingList}>Add to Shopping List</button>
+                <button onClick={handleLike}>{liked ? <IoHeartSharp /> : <IoHeartOutline />}</button>
+                <button onClick={handleFavorite}>{favorited ? <IoBookmarkSharp /> : <IoBookmarkOutline />}</button>
+                <button onClick={handleAddToShoppingList}><IoListOutline /></button>
             </div>
+
+            
     
             <div className="comments-section">
+                <h2>Comments:</h2>
+
                 <div className="comment-input">
                     <input
                         type="text"
@@ -368,40 +367,60 @@ const Recipe = () => {
                     <select value={rating} onChange={e => setRating(Number(e.target.value))}>
                         {[1, 2, 3, 4, 5].map(value => (
                             <option key={value} value={value}>
-                                {value}
+                                {value} <IoStarOutline />
                             </option>
                         ))}
                     </select>
+                    <input type="file" multiple accept="image/*" onChange={e => setImageFiles(e.target.files)} />
+                    <input type="file" multiple accept="video/*" onChange={e => setVideoFiles(e.target.files)} />
                     <button onClick={handleAddComment}>Add Comment</button>
                     <p>Likes : {recipe.total_likes}</p>
                     <p>Rating : {String(recipe.avg_rating).slice(0, 3)}</p>
                 </div>
-                <h2>Comments:</h2>
-    
-                {comments.length > 0 ? (
-                    <>
+                        {comments.length > 0 ? (
+                        <>
                         <ul className="comment-list">
-                            {comments.map(comment => (
-                                !comment.content ? (
-                                    <li className="comment" key={comment.id}>
-                                        This user did not comment. {comment.rating}
-                                    </li>
-                                ) : (
-                                    <li className="comment" key={comment.id}>
-                                        {comment.content} {comment.rating}
-                                    </li>
-                                )))}
+                        {comments.map(comment => (
+                        !comment.content ? (
+                        <li className="comment" key={comment.id}>
+                            {comment.userid.username}: This user did not comment. {comment.rating} <IoStarOutline />
+                            {comment.images.map((image) => (
+                            <Image key={comment.id} src={image.image} alt={`Comment image ${comment.id}` } width={250} height={250} />
+                            ))}
+                            {comment.videos.map((video, idx) => (
+                            <video key={idx} width="320" height="240" controls>
+                                <source src={video.video} type="video/ogg" />
+                                Your browser does not support the video tag.
+                            </video>
+                            ))}
+                        </li>
+                        ) : (
+                        <li className="comment" key={comment.id}>
+                            {comment.userid.username}: {comment.content} {comment.rating} <IoStarOutline />
+                            {comment.images.map((image) => (
+                            <Image key={comment.id} src={image.image} alt={`Comment image ${comment.id}` } width={250} height={250} />
+                            ))}
+                            {comment.videos.map((video, idx) => (
+                            <video key={idx} width="320" height="240" controls>
+                                <source src={video.video} type="video/ogg" />
+                                Your browser does not support the video tag.
+                            </video>
+                            ))}
+                        </li>
+                        )))}
                         </ul>
                         <div>
-                            <button disabled={!previousPage} onClick={handlePreviousPage}>Previous</button>
-                            <span>Page {currentPage}</span>
-                            <button disabled={!nextPage} onClick={handleNextPage}>Next</button>
+                        <button disabled={!previousPage} onClick={handlePreviousPage}>Previous</button>
+                        <span>Page {currentPage}</span>
+                        <button disabled={!nextPage} onClick={handleNextPage}>Next</button>
                         </div>
-                    </>
-                ) : (
-                    <p>No comments available</p>
-                )}
-            </div>
+                        </>
+                        ) : (
+                        <p>No comments available</p>
+                        )}
+
+                    </div>
+
         </div>
     );
     
