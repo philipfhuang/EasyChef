@@ -28,12 +28,13 @@ class SearchView(ListAPIView):
                                         Q(creator__username__icontains=search_param) |
                                         Q(cuisines__cuisine__name__icontains=search_param))
         cooktime = self.request.GET.get('cookingtime')
+        print(cooktime)
         ingredients = self.request.GET.get('ingredient')
         diets = self.request.GET.get('diet')
         cuisines = self.request.GET.get('cuisine')
         sort = self.request.GET.get('sort')
         if cooktime:
-            recipes = recipes.filter(cooking_time__lt=int(cooktime))
+            recipes = recipes.filter(cooking_time__lte=int(cooktime))
         if ingredients:
             ingredients = ingredients.split(',')
             recipes = recipes.filter(
