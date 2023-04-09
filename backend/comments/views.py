@@ -58,7 +58,7 @@ class CommentVideoCreateView(CreateAPIView):
 
 
 class CommentVideoDeleteView(DestroyAPIView):
-    serializer_class = CommentImageSerializer
+    serializer_class = CommentVideoSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
