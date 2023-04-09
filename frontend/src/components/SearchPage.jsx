@@ -1,7 +1,6 @@
 import {useNavigate, useSearchParams} from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import { debounce } from 'lodash-es';
 import {AutoComplete, BackTop, Button, InputNumber, List, Rating, Select, Spin, Typography} from "@douyinfe/semi-ui";
 import {IconArrowUp, IconSearch} from "@douyinfe/semi-icons";
 
