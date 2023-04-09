@@ -28,7 +28,6 @@ class SearchView(ListAPIView):
                                         Q(creator__username__icontains=search_param) |
                                         Q(cuisines__cuisine__name__icontains=search_param))
         cooktime = self.request.GET.get('cookingtime')
-        print(cooktime)
         ingredients = self.request.GET.get('ingredient')
         diets = self.request.GET.get('diet')
         cuisines = self.request.GET.get('cuisine')
@@ -48,7 +47,6 @@ class SearchView(ListAPIView):
         if sort:
             recipes = sorted(recipes, key=lambda x: get_recipe_rating(x),
                              reverse=True)
-        print(recipes)
         return recipes
 
 
