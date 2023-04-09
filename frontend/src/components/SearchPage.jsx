@@ -49,7 +49,7 @@ export const SearchPage = () => {
         if (!ingredient) ingredient = '';
         if (!diet) diet = '';
         if (!cuisine) cuisine = '';
-        if (!cooktime) cooktime = 0;
+        if (!cooktime) cooktime = '';
 
         let next = `http://127.0.0.1:8000/search/?sort=sort&content=${content}&ingredient=${ingredient}&diet=${diet}&cuisine=${cuisine}&cooktime=${cooktime}`;
 
@@ -301,7 +301,7 @@ export const SearchPage = () => {
                 )}
             />
             : <Empty
-                    style={{marginTop: 50}}
+                    style={{marginTop: 100}}
                     image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}
                     title={'No Result'}
                     description="Seems like there is no result that matches your search :("
