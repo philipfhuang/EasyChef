@@ -1,4 +1,5 @@
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from recipes.models import Diet, Recipe, Cuisine, Ingredient, \
@@ -67,13 +68,17 @@ class RecipeDietSerializer(serializers.ModelSerializer):
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
     diet = DietSerializer(read_only=True)
 
+    recipe_id = serializers.IntegerField(write_only=True)
+    diet_name = serializers.CharField(write_only=True)
+
     class Meta:
         model = RecipeDiet
-        fields = ('id', 'recipe', 'diet')
+        fields = ('id', 'recipe', 'diet', 'recipe_id', 'diet_name')
 
     def create(self, validated_data):
-        recipe = validated_data.get('recipe')
-        name = validated_data.get('diet').lower()
+        recipe_id = validated_data.get('recipe_id')
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        name = validated_data.get('diet_name').lower()
         try:
             diet = Diet.objects.get(name=name)
         except Diet.DoesNotExist:
@@ -86,13 +91,17 @@ class RecipeCuisineSerializer(serializers.ModelSerializer):
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
     cuisine = CuisineSerializer(read_only=True)
 
+    recipe_id = serializers.IntegerField(write_only=True)
+    cuisine_name = serializers.CharField(write_only=True)
+
     class Meta:
         model = RecipeCuisine
-        fields = ('id', 'recipe', 'cuisine')
+        fields = ('id', 'recipe', 'cuisine', 'recipe_id', 'cuisine_name')
 
     def create(self, validated_data):
-        recipe = validated_data.get('recipe')
-        name = validated_data.get('cuisine').lower()
+        recipe_id = validated_data.get('recipe_id')
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        name = validated_data.get('cuisine_name').lower()
         try:
             cuisine = Cuisine.objects.get(name=name)
         except Cuisine.DoesNotExist:
