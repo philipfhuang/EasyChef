@@ -31,7 +31,7 @@ class StepSerializer(serializers.ModelSerializer):
     images = StepImageSerializer(many=True, read_only=True)
     videos = StepVideoSerializer(many=True, read_only=True)
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
-    recipe_id = serializers.IntegerField(write_only=True)
+    recipe_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = Step

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import IllustrationNoContent from "./IllustrationNoContent.tsx";
-import {Card, Checkbox, Empty, List} from "@douyinfe/semi-ui";
+import {Card, Checkbox, Empty, InputNumber, List} from "@douyinfe/semi-ui";
 import {Link, useNavigate} from "react-router-dom";
 
 export const ShoppingList = () => {
@@ -10,9 +10,33 @@ export const ShoppingList = () => {
     const [serves, setServes] = useState({});
     const [total, setTotal] = useState({});
 
+    const [servesChanged, setServesChanged] = useState(0);
+    const [totalChanged, setTotalChanged] = useState(0);
+
     const firstTime = useRef(true);
 
     let navigate = useNavigate();
+
+    useEffect(() => {
+        if (!servesChanged) {
+            if (localStorage.getItem("serves")) {
+                setServes(JSON.parse(localStorage.getItem("serves")));
+            }
+            return
+        }
+        localStorage.setItem("serves", JSON.stringify(serves));
+    }, [servesChanged])
+
+    useEffect(() => {
+        if (!totalChanged) {
+            if (localStorage.getItem("total")) {
+                setTotal(JSON.parse(localStorage.getItem("total")));
+            }
+            console.log(total);
+            return
+        }
+        localStorage.setItem("total", JSON.stringify(total));
+    }, [totalChanged])
 
     useEffect(() => {
         if (!firstTime.current) return;
@@ -22,9 +46,7 @@ export const ShoppingList = () => {
             setTotal(JSON.parse(localStorage.getItem("total")));
         }
 
-        if (localStorage.getItem("serves")) {
-            setServes(JSON.parse(localStorage.getItem("serves")));
-        }
+
 
         let token;
         try {
@@ -54,37 +76,72 @@ export const ShoppingList = () => {
     }
     const updateServes = (target) => {
         let id = target.ingredId;
-        if (id in serves && !serves[id].checked) {
-            setServes(current => {
-                const {id, ...rest} = current;
-                return rest;
-            })
+
+        if (id in serves && !target.checked) {
+            console.log("if");
+            const newServes = {...serves};
+            delete newServes[id];
+            setServes(newServes);
+            setServesChanged(Math.random());
+
             const name = target.children;
-            setTotal({...total, [name]: total[name] - parseInt(target.extra.split(" ")[0])})
-            localStorage.setItem("serves", JSON.stringify(serves));
-            localStorage.setItem("total", JSON.stringify(total));
-            return;
-        }
-        if (id in serves && serves[id].checked) {
-            let value = parseInt(target.extra.split(" ")[0]) + serves[target.ingredId];
+            const result = total[name].value - parseInt(target.extra.split(" ")[0]);
+
+            if (result <= 0) {
+                const newTotal = {...total};
+                delete newTotal[name];
+                setTotal(newTotal);
+                setTotalChanged(Math.random());
+            } else {
+                setTotal({...total, [name]: {
+                        value: result,
+                        people: total[name].people
+                    }});
+                setTotalChanged(Math.random());
+            }
+        } else if (id in serves) {
+            console.log("else if");
+            let value = parseInt(target.extra.split(" ")[0]) + serves[target.ingredId].value;
+
             setServes({...serves, [id]: {
+                    ...id,
                     checked: true,
                     value: value
                 }});
+            setServesChanged(Math.random());
+
+            const name = target.children;
+            setTotal({...total, [name]: {
+                    value: total[name].value + parseInt(target.extra.split(" ")[0]),
+                    people: total[name].people
+                }});
+            setTotalChanged(Math.random());
         } else {
+            console.log("else");
             setServes({...serves, [id]: {
+                    ...id,
                     checked: true,
                     value: parseInt(target.extra.split(" ")[0])
                 }});
-        }
+            setServesChanged(Math.random());
 
-        const name = target.children
-        if (name in total) {
-            setTotal({...total, [name]: total[name] + parseInt(target.extra.split(" ")[0])});
-        } else {
-            setTotal({...total, [name]: parseInt(target.extra.split(" ")[0])});
+            const name = target.children;
+            setTotal({...total, [name]: {
+                    value: (name in total ? total[name].value : 0) + parseInt(target.extra.split(" ")[0]),
+                    people: 1
+                }});
+            setTotalChanged(Math.random());
         }
     }
+
+    const addPeople = (id, people) => {
+        setServes({...serves, [id]: {
+                ...id,
+                people: people
+            }})
+        setServesChanged(Math.random());
+    }
+
 
     return (
         <div style={{width:1200, margin:"0 auto", marginTop: 20, marginBottom: 100}}>
@@ -103,7 +160,7 @@ export const ShoppingList = () => {
                             <List.Item
                                 main={
                                 <>
-                                    <Checkbox key={item.id} aria-label={item.ingredients.id}
+                                    <Checkbox key={item.id} aria-label={item.ingredients.name}
                                               ingredId={item.ingredients.id}
                                               extra={`${item.ingredients.quantity} ${item.ingredients.unit.name}`}
                                               onChange={checked => updateServes(checked.target)}
@@ -115,7 +172,13 @@ export const ShoppingList = () => {
                                 </>
                                 }
                                 extra={
-                                    <div>hello</div>
+                                    <InputNumber defaultValue={1}
+                                                 onNumberChange={(value)=>{addPeople(item.id, value)}}
+                                                 min={1}
+                                                 prefix={'For'}
+                                                 suffix={'People'}
+                                                 style={{width:200}}
+                                    />
                                 }
                             />
                         )}
@@ -124,19 +187,20 @@ export const ShoppingList = () => {
                         title={<h2 style={{textAlign:"center"}}>Calculator</h2>}
                         style={{flex:4, marginLeft: 20}}
                     >
-                        <List
-                            dataSource={total}
-                            renderItem={item => (
-                                <List.Item
-                                    main={
-                                        <div>
-                                            <h3>{item}</h3>
-                                            <p>{total[item]} {item}</p>
-                                        </div>
+                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                            <div style={{width:"100%"}}>
+                                <h3>Ingredients</h3>
+                                <ul style={{width:"100%"}}>
+                                    {Object.keys(total).map((key, index) => {
+                                        return (
+                                            <li key={index} style={{position:"relative", width:"100%"}}>
+                                                {key}: {total[key].value * total[key].people}
+                                            </li>)
                                     }
-                                />
-                            )}
-                        />
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
                     </Card>
                 </div>
             }
