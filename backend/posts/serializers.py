@@ -31,10 +31,11 @@ class StepSerializer(serializers.ModelSerializer):
     images = StepImageSerializer(many=True, read_only=True)
     videos = StepVideoSerializer(many=True, read_only=True)
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
+    recipe_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Step
-        fields = ('id', 'step_number', 'content', 'recipe', 'images', 'videos')
+        fields = ('id', 'step_number', 'content', 'recipe', 'images', 'videos', 'recipe_id')
 
 
 class CuisineSerializer(serializers.ModelSerializer):
