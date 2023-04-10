@@ -223,8 +223,8 @@ class RecipeCuisineDeleteView(DestroyAPIView):
     serializer_class = RecipeCuisineSerializer
 
     def get_object(self):
-        recipe_id = self.request.GET.get('recipe_id')
-        name = self.request.GET.get('cuisine_name')
+        recipe_id = self.request.data.get('recipe_id')
+        name = self.request.data.get('cuisine_name')
         return get_object_or_404(RecipeCuisine, recipe__id=recipe_id, cuisine__name=name)
 
 
@@ -238,6 +238,6 @@ class RecipeDietDeleteView(DestroyAPIView):
     serializer_class = RecipeDietSerializer
 
     def get_object(self):
-        recipe_id = self.request.GET.get('recipe_id')
-        name = self.request.GET.get('diet_name')
+        recipe_id = self.request.data.get('recipe_id')
+        name = self.request.data.get('diet_name')
         return get_object_or_404(RecipeDiet, recipe__id=recipe_id, diet__name=name)
