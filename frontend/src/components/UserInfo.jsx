@@ -38,6 +38,8 @@ export const UserInfo = () => {
     const logout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+        localStorage.removeItem("serves");
+        localStorage.removeItem("total");
         navigate("/")
     }
 
