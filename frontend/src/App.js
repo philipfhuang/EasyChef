@@ -11,7 +11,8 @@ import CreateRecipe from "./components/CreateRecipe";
 import Explore from "./components/Explore";
 import SearchContext, {useSearcContext} from "./contexts/SearchContext";
 import SearchPage from "./components/SearchPage";
-import EditRecipe from "./components/EditRecipe";
+import Profile from "./components/Profile";
+import EditProfile from "./components/EditProfile";
 
 function App() {
     return (
@@ -25,7 +26,8 @@ function App() {
                 <Route path="/createRecipe" element={<CreateRecipe/>}/>
                 <Route path="/explore" element={<Explore/>}/>
                 <Route path="/search" element={<SearchPage/>}/>
-                <Route path="/editRecipe" element={<EditRecipe/>}/>
+                <Route path="/accounts/profile/:user_id/" element={<Profile/>}/>
+                <Route path="/accounts/profile/edit/" element={<EditProfile/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

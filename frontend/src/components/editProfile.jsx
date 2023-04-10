@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from "react-router-dom";
 import { Form, Button, Tooltip } from '@douyinfe/semi-ui';
 
-const editProfile = () => {
+const EditProfile = () => {
     const [first_name, setFirst] = useState(null);
     const [last_name, setLast] = useState(null);
     const [email, setEmail] = useState(null);
@@ -13,8 +13,9 @@ const editProfile = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const { user_id } = useParams();
-                const response = await axios.get('http://127.0.0.1:8000/accounts/profile/${user_id}/',
+                const user_id = localStorage.getItem('user');
+                console.log(user_id);
+                const response = await axios.get(`http://127.0.0.1:8000/accounts/profile/${user_id}/`,
                 {headers: {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Credentials": true,
@@ -89,7 +90,7 @@ const editProfile = () => {
         <div>
             <Form layout='vertical' onValueChange={values=>console.log(values)}>
                 <Form.Upload field='files' label='Avatar' initValue={{avatar}} style={{ width: input_width }}>
-                    <Button icon={<IconUpload />} theme="light" onClick={handleAvatarChange}>
+                    <Button theme="light" onClick={handleAvatarChange}>
                         Upload Picture
                     </Button>
                 </Form.Upload>
@@ -103,4 +104,4 @@ const editProfile = () => {
     );
 };
 
-export default editProfile;
+export default EditProfile;
