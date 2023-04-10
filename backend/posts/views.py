@@ -224,7 +224,7 @@ class RecipeCuisineDeleteView(DestroyAPIView):
 
     def get_object(self):
         recipe_id = self.request.data.get('recipe_id')
-        name = self.request.data.get('cuisine_name')
+        name = self.request.data.get('cuisine_name').lower()
         return get_object_or_404(RecipeCuisine, recipe__id=recipe_id, cuisine__name=name)
 
 
@@ -239,5 +239,5 @@ class RecipeDietDeleteView(DestroyAPIView):
 
     def get_object(self):
         recipe_id = self.request.data.get('recipe_id')
-        name = self.request.data.get('diet_name')
+        name = self.request.data.get('diet_name').lower()
         return get_object_or_404(RecipeDiet, recipe__id=recipe_id, diet__name=name)
