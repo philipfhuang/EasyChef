@@ -68,7 +68,7 @@ export const UserInfo = () => {
                     <Dropdown.Item icon={<IconUser/>} onClick={()=>{RouterChange("profile/1", true)}}>
                         My Profile
                     </Dropdown.Item>
-                    <Dropdown.Item icon={<IconCart/>} onClick={()=>{RouterChange("shoppinglists", true)}}>
+                    <Dropdown.Item icon={<IconCart/>} onClick={()=>{RouterChange("shoppinglist", true)}}>
                         Shopping List
                     </Dropdown.Item>
                     <Dropdown.Item icon={<IconExit/>} onClick={logout}>
