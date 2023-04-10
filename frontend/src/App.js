@@ -11,6 +11,7 @@ import CreateRecipe from "./components/CreateRecipe";
 import Explore from "./components/Explore";
 import SearchContext, {useSearcContext} from "./contexts/SearchContext";
 import SearchPage from "./components/SearchPage";
+import EditRecipe from "./components/EditRecipe";
 
 function App() {
     return (
@@ -20,10 +21,11 @@ function App() {
                 <Route index element={<Home/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/signup" element={<Signup/>}/>
-                <Route path="/recipe" element={<Recipe/>}/>
+                <Route path="/recipe/:id" element={<Recipe/>}/>
                 <Route path="/createRecipe" element={<CreateRecipe/>}/>
                 <Route path="/explore" element={<Explore/>}/>
                 <Route path="/search" element={<SearchPage/>}/>
+                <Route path="/editRecipe" element={<EditRecipe/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

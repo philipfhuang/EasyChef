@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Route, useParams } from 'react-router-dom';
 import { IoHeartOutline, IoHeartSharp, IoBookmarkOutline, IoBookmarkSharp, IoListOutline, IoStarOutline } from 'react-icons/io5';
 import axios from 'axios';
 import './Recipe.css';
@@ -18,11 +19,13 @@ const Recipe = () => {
     const [previousPage, setPreviousPage] = useState(null);
     const [imageFiles, setImageFiles] = useState([]);
     const [videoFiles, setVideoFiles] = useState([]);
+    const { id } = useParams();
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/posts/recipe/46/');
+
+                const response = await axios.get(`http://127.0.0.1:8000/posts/recipe/${id}/`);
                 setRecipe(response.data);
     
                 const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -43,48 +46,12 @@ const Recipe = () => {
             } catch (error) {
                 console.error('Error fetching recipe:', error);
             }
-            await fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/46/`);
+            await fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/${id}/`);
 
 
         }
         fetchData();
     }, []);
-
-    const handleAddImage = async (commentId, file) => {
-        try {
-          const formData = new FormData();
-          formData.append('comment', commentId);
-          formData.append('image', file);
-      
-          const storedToken = localStorage.getItem('token');
-          const accessToken = JSON.parse(storedToken).access;
-          const config = {
-            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'multipart/form-data' }
-          };
-      
-          await axios.post('http://127.0.0.1:8000/comments/commentImage/', formData, config);
-        } catch (error) {
-          console.error('Error uploading image:', error);
-        }
-      };
-      
-      const handleAddVideo = async (commentId, file) => {
-        try {
-          const formData = new FormData();
-          formData.append('comment', commentId);
-          formData.append('video', file);
-      
-          const storedToken = localStorage.getItem('token');
-          const accessToken = JSON.parse(storedToken).access;
-          const config = {
-            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'multipart/form-data' }
-          };
-      
-          await axios.post('http://127.0.0.1:8000/comments/commentVideo/', formData, config);
-        } catch (error) {
-          console.error('Error uploading video:', error);
-        }
-      };
 
     const fetchComments = async (url) => {
         try {
