@@ -3,7 +3,8 @@ from .views import CuisineCreateView, CuisineListView, DietCreateView, \
     DietListView, DietOneView, IngredientCreateView, IngredientListView, \
     IngredientQuantityDeleteView, RecipeCuisineCreateView, \
     RecipeCuisineDeleteView, RecipeDeleteView, \
-    RecipeDietCreateView, RecipeUpdateView, StepCreateView, StepDeleteView, \
+    RecipeDietCreateView, RecipeDietDeleteView, RecipeUpdateView, \
+    StepCreateView, StepDeleteView, \
     StepImageCreateView, StepImageDeleteView, StepUpdateView, \
     StepVideoCreateView, StepVideoDeleteView, UnitCreateView, \
     UnitListView, IngredientQuantityCreateView, IngredientQuantityListView, \
@@ -53,5 +54,5 @@ urlpatterns = [
     path('recipeCuisineDelete/', RecipeCuisineDeleteView.as_view()),
 
     path('recipeDiet/', RecipeDietCreateView.as_view()),
-    path('recipeDietDelete/', RecipeDietCreateView.as_view()),
+    path('recipeDietDelete/', RecipeDietDeleteView.as_view()),
 ]
