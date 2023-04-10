@@ -71,6 +71,16 @@ class RecipeDietSerializer(serializers.ModelSerializer):
         model = RecipeDiet
         fields = ('id', 'recipe', 'diet')
 
+    def create(self, validated_data):
+        recipe = validated_data.get('recipe')
+        name = validated_data.get('diet').lower()
+        try:
+            diet = Diet.objects.get(name=name)
+        except Diet.DoesNotExist:
+            diet = Diet.objects.create(name=name)
+        recipe_diet = RecipeDiet.objects.create(recipe=recipe, diet=diet)
+        return recipe_diet
+
 
 class RecipeCuisineSerializer(serializers.ModelSerializer):
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -79,6 +89,17 @@ class RecipeCuisineSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeCuisine
         fields = ('id', 'recipe', 'cuisine')
+
+    def create(self, validated_data):
+        recipe = validated_data.get('recipe')
+        name = validated_data.get('cuisine').lower()
+        try:
+            cuisine = Cuisine.objects.get(name=name)
+        except Cuisine.DoesNotExist:
+            cuisine = Cuisine.objects.create(name=name)
+        recipe_cuisine = RecipeCuisine.objects.create(recipe=recipe,
+                                                      cuisine=cuisine)
+        return recipe_cuisine
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -132,29 +153,33 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(creator=self.context['request'].user, **validated_data)
 
         for name in cuisine_data:
+            name = name.lower()
             try:
                 cuisine = Cuisine.objects.get(name=name)
             except Cuisine.DoesNotExist:
                 cuisine = Cuisine.objects.create(name=name)
             RecipeCuisine.objects.create(recipe=recipe, cuisine=cuisine)
         for diet in diet_data:
+            diet = diet.lower()
             try:
                 diet = Diet.objects.get(name=diet)
             except Diet.DoesNotExist:
                 diet = Diet.objects.create(name=diet)
             RecipeDiet.objects.create(recipe=recipe, diet=diet)
         for ingre in ingredient_data:
+            unit_name = ingre['unit'].lower()
             try:
-                unit = Unit.objects.get(name=ingre['unit'])
+                unit = Unit.objects.get(name=unit_name)
             except Unit.DoesNotExist:
-                unit = Unit.objects.create(name=ingre['unit'])
+                unit = Unit.objects.create(name=unit_name)
 
+            ingredient_name = ingre['ingredient'].lower()
             try:
                 ingredient = Ingredient.objects.get(
-                    name=ingre['ingredient'])
+                    name=ingredient_name)
             except Ingredient.DoesNotExist:
                 ingredient = Ingredient.objects.create(
-                    name=ingre['ingredient'])
+                    name=ingredient_name)
 
             IngredientQuantity.objects.create(recipe=recipe,
                                               ingredient=ingredient,
