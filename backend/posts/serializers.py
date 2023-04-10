@@ -58,10 +58,56 @@ class UnitSerializer(serializers.ModelSerializer):
 class IngredientQuantitySerializer(serializers.ModelSerializer):
     ingredient = IngredientSerializer(read_only=True)
     unit = UnitSerializer(read_only=True)
+    quantity = serializers.IntegerField()
+
+    ingredient_name = serializers.CharField(write_only=True)
+    unit_name = serializers.CharField(write_only=True)
+    recipe_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = IngredientQuantity
-        fields = ('id', 'ingredient', 'quantity', 'unit', 'recipe')
+        fields = ('id', 'ingredient', 'quantity', 'unit', 'recipe', 'ingredient_name', 'unit_name', 'recipe_id')
+
+    def create(self, validated_data):
+        ingredient_name = validated_data.get('ingredient_name').lower()
+        unit_name = validated_data.get('unit_name').lower()
+        quantity = validated_data.get('quantity')
+        recipe_id = validated_data.get('recipe_id')
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        try:
+            ingredient = Ingredient.objects.get(name=ingredient_name)
+        except Ingredient.DoesNotExist:
+            ingredient = Ingredient.objects.create(name=ingredient_name)
+        try:
+            unit = Unit.objects.get(name=unit_name)
+        except Unit.DoesNotExist:
+            unit = Unit.objects.create(name=unit_name)
+        ingredient_quantity = IngredientQuantity.objects.create(
+            ingredient=ingredient, quantity=quantity, unit=unit, recipe=recipe)
+        return ingredient_quantity
+
+    def update(self, instance, validated_data):
+        ingredient_name = validated_data.get('ingredient_name')
+        unit_name = validated_data.get('unit_name')
+        quantity = validated_data.get('quantity')
+        if ingredient_name:
+            ingredient_name = ingredient_name.lower()
+            try:
+                ingredient = Ingredient.objects.get(name=ingredient_name)
+            except Ingredient.DoesNotExist:
+                ingredient = Ingredient.objects.create(name=ingredient_name)
+            instance.ingredient = ingredient
+        if unit_name:
+            unit_name = unit_name.lower()
+            try:
+                unit = Unit.objects.get(name=unit_name)
+            except Unit.DoesNotExist:
+                unit = Unit.objects.create(name=unit_name)
+            instance.unit = unit
+        if quantity:
+            instance.quantity = quantity
+        instance.save()
+        return instance
 
 
 class RecipeDietSerializer(serializers.ModelSerializer):
