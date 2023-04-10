@@ -6,6 +6,7 @@ from posts.serializers import IngredientQuantitySerializer
 class ShoppingListItemSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField('get_ingredients',
                                                     read_only=True)
+    userid = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = ShoppingListItem
