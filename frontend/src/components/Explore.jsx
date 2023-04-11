@@ -66,7 +66,7 @@ export const Explore = () => {
 
 
     const toRecipe = (id) => {
-        navigate(`/recipe/${id}`)
+        navigate(`/recipe?id=${id}`)
     }
 
     const { Title, Paragraph } = Typography;

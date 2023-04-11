@@ -45,7 +45,7 @@ export const Home = () => {
 
 
     const toRecipe = (id) => {
-        navigate(`/recipe/${id}`)
+        navigate(`/recipe?id=${id}`)
     }
 
     const { Title, Paragraph } = Typography;
