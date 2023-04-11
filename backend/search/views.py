@@ -120,7 +120,6 @@ class SearchFilterView(View):
                 }
                 data['results'].append(result)
 
-        data['results'] = list(set(data['results']))
         data['results'] = data['results'][:5]
 
         return JsonResponse(data)
