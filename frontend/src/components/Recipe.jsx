@@ -47,7 +47,7 @@ const Recipe = () => {
     const [commentCount, setCommentCount] = useState(0);
     const [liked, setLiked] = useState(false);
     const [favorited, setFavorited] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [page, setPage] = useState(1);
     const [imageFiles, setImageFiles] = useState([]);
     const [videoFiles, setVideoFiles] = useState([]);
 
@@ -283,7 +283,7 @@ const Recipe = () => {
     if (!recipe) return <div>Loading...</div>;
 
     function onPageChange(currentPage) {
-        setCurrentPage(currentPage);
+        setPage(currentPage);
     }
 
     return (
@@ -501,9 +501,9 @@ const Recipe = () => {
                             total={commentCount}
                             pageSize={15}
                             style={{ marginBottom: 12 }}
-                            currentPage={currentPage}
+                            currentPage={page}
                             onPageChange={onPageChange}
-                            onChange={() => {fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/${id}/?page=${currentPage}`)}}
+                            onChange={() => {fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/${id}/?page=${page}`)}}
                         ></Pagination>
                     </div>
 
