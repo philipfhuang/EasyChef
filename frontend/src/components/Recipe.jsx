@@ -468,7 +468,7 @@ const Recipe = () => {
                                                         return (
                                                             <video
                                                                 key={index}
-                                                                width="100"
+                                                                width="200"
                                                                 height="100"
                                                                 controls
                                                                 style={{marginTop: 10, marginRight: 5}}
