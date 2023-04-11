@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { AutoComplete } from '@douyinfe/semi-ui';
-import { IconSearch } from '@douyinfe/semi-icons';
-import { Input, Icon } from 'antd';
+import { Form, Input, Button, InputNumber, Select, Upload, List, Space, Row, Col } from 'antd';
+import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import './CreateRecipe.css'
+
 
 const CreateRecipe = () => {
+    const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [cookingTime, setCookingTime] = useState('');
@@ -18,6 +21,28 @@ const CreateRecipe = () => {
     const [dietSearchResults, setDietSearchResults] = useState([]);
     const [cuisineSearchResults, setCuisineSearchResults] = useState([]);
     const [ingredientSearchResults, setIngredientSearchResults] = useState([]);
+    const [unitSearchResults, setUnitSearchResults] = useState([]);
+
+
+    const searchUnit = async (query, index) => {
+        if (!query) return;
+        const storedToken = localStorage.getItem('token');
+        const accessToken = JSON.parse(storedToken).access;
+
+        const config = {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        };
+
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/search/filter/?type=unit&content=${query}`, config);
+            const updatedSearchResults = [...unitSearchResults];
+            updatedSearchResults[index] = Array.isArray(response.data.results) ? response.data.results : [];
+            setUnitSearchResults(updatedSearchResults);
+        } catch (error) {
+            console.error('Error searching for units:', error);
+            alert('Failed to search for units.');
+        }
+    };
 
     const searchIngredient = async (query, index) => {
         if (!query) return;
@@ -193,6 +218,7 @@ const CreateRecipe = () => {
         }
     };
 
+
     const addIngredientQuantity = () => {
         setIngredientQuantities([...ingredientQuantities, { unit: '', quantity: '', ingredient: '' }]);
     };
@@ -233,7 +259,6 @@ const CreateRecipe = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
     
         const storedToken = localStorage.getItem('token');
         const accessToken = JSON.parse(storedToken).access;
@@ -263,6 +288,8 @@ const CreateRecipe = () => {
         
             // Call updateCoverAndAddStepImages after successfully creating the recipe
             await updateCoverAndAddStepImages(recipeId, createdStepIds, steps);
+
+            navigate(`/recipe/${recipeId}`);
         
         } catch (error) {
             console.error('Error creating recipe:', error);
@@ -272,19 +299,38 @@ const CreateRecipe = () => {
     
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Title:
-                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-            </label>
-            <label>
-                Description:
-                <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
-            </label>
-            <label>
-                Cooking Time:
-                <input type="text" value={cookingTime} onChange={(e) => setCookingTime(e.target.value)} />
-            </label>
+        <div className="form-container">
+            <Row justify="center">
+            <Col xs={24} sm={24} md={18} lg={12} xl={10}>
+        <Form onFinish={handleSubmit}>
+                        {/* Cover Image */}
+                        <Form.Item label="Cover Image">
+      <Upload
+        beforeUpload={(file) => {
+          setCoverFile(file);
+          return false;
+        }}
+      >
+        <Button>Click to Upload</Button>
+      </Upload>
+    </Form.Item>
+        <Form.Item label="Title">
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+        </Form.Item>
+        <Form.Item label="Description">
+          <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+        </Form.Item>
+        <Form.Item label="Cooking Time (min)">
+        <InputNumber
+            min={0}
+            value={cookingTime}
+            onChange={(value) => setCookingTime(value)}
+        />
+
+        </Form.Item>
+        <Row gutter={16}>
+  <Col>
+  <div style={{ display: 'inline-block' }}>
             <div>
             <label>
                 Diet:
@@ -335,7 +381,10 @@ const CreateRecipe = () => {
         </div>
     ))}
 </div>
-
+</div>
+</Col>
+<Col>
+<div style={{ display: 'inline-block' }}>
 <label>
     Cuisine:
     <Input
@@ -384,146 +433,177 @@ const CreateRecipe = () => {
         </div>
     ))}
 </div>
+</div>
+</Col>
+</Row>
             
-            {/* Ingredient Quantities */}
-            {ingredientQuantities.map((ingredientQuantity, index) => (
-                <div key={index}>
-                    <label>
-                        Ingredient:
-                        <input
-    type="text"
-    value={ingredientQuantity.ingredient}
-    onChange={(e) => {
-        updateIngredientQuantity(index, 'ingredient', e.target.value);
-        searchIngredient(e.target.value, index);
-    }}
-/>
-                    </label>
-                    <div>
-    {ingredientSearchResults[index]?.map((result, idx) => (
-        <div
+    {/* Ingredient Quantities */}
+    <Form.Item label="Ingredient">
+{ingredientQuantities.map((ingredientQuantity, index) => (
+  <Space key={index} direction="horizontal" style={{ width: '100%' }}>
+    <Form.Item label={`${index + 1}`}>
+      <Input
+        value={ingredientQuantity.ingredient}
+        onChange={(e) => {
+          updateIngredientQuantity(index, 'ingredient', e.target.value);
+          searchIngredient(e.target.value, index);
+        }}
+      />
+      <div>
+        {ingredientSearchResults[index]?.map((result, idx) => (
+          <div
             key={idx}
             onClick={() => {
-                updateIngredientQuantity(index, 'ingredient', result.label);
-                const updatedSearchResults = [...ingredientSearchResults];
-                updatedSearchResults[index] = [];
-                setIngredientSearchResults(updatedSearchResults);
+              updateIngredientQuantity(index, 'ingredient', result.label);
+              const updatedSearchResults = [...ingredientSearchResults];
+              updatedSearchResults[index] = [];
+              setIngredientSearchResults(updatedSearchResults);
             }}
-        >
+          >
             {result.label}
-        </div>
-    ))}
-</div>
-                    <label>
-                        Quantity:
-                        <input
-                            type="number"
-                            value={ingredientQuantity.quantity}
-                            onChange={(e) => updateIngredientQuantity(index, 'quantity', e.target.value)}
-                        />
-                    </label>
-                    <label>
-                        Unit:
-                        <input
-                            type="text"
-                            value={ingredientQuantity.unit}
-                            onChange={(e) => updateIngredientQuantity(index, 'unit', e.target.value)}
-                        />
-                    </label>
-                    <button type="button" onClick={() => deleteIngredient(index)}>
-                        Delete Ingredient
-                    </button>
-                </div>
-            ))}
-            <button type="button" onClick={addIngredientQuantity}>
-                Add Ingredient
-            </button>
+          </div>
+        ))}
+      </div>
+    </Form.Item>
+    <Form.Item label={`Quantity ${index + 1}`}>
+      <Input
+        type="number"
+        value={ingredientQuantity.quantity}
+        onChange={(e) => updateIngredientQuantity(index, 'quantity', e.target.value)}
+      />
+    </Form.Item>
+    <Form.Item label={`Unit ${index + 1}`}>
+      <Input
+        value={ingredientQuantity.unit}
+        onChange={(e) => {
+          updateIngredientQuantity(index, 'unit', e.target.value);
+          searchUnit(e.target.value, index);
+        }}
+      />
+      <div>
+        {unitSearchResults[index]?.map((result, idx) => (
+          <div
+            key={idx}
+            onClick={() => {
+              updateIngredientQuantity(index, 'unit', result.label);
+              const updatedSearchResults = [...unitSearchResults];
+              updatedSearchResults[index] = [];
+              setUnitSearchResults(updatedSearchResults);
+            }}
+          >
+            {result.label}
+          </div>
+        ))}
+      </div>
+    </Form.Item>
+    <Button type="primary" danger onClick={() => deleteIngredient(index)}>
+      Delete
+    </Button>
+  </Space>
+))}
+<Button type="primary" onClick={addIngredientQuantity} icon={<PlusOutlined />}>
+  Add
+</Button>
+</Form.Item>
+    
 
             {/* Steps */}
-            {steps.map((step, stepIndex) => (
-                <div key={stepIndex}>
-                    <label>
-                        Step {step.step_number}:
-                        <input
-                            type="text"
-                            value={step.content}
-                            onChange={(e) => updateStep(stepIndex, e.target.value)}
-                        />
-                    </label>
-                    {step.images.map((image, imageIndex) => (
-                        <div key={imageIndex}>
-                            <label>
-                                Image {imageIndex + 1} for step {step.step_number}:
-                                <input
-                                    type="file"
-                                    onChange={(e) => {
-                                        handleImageInputChange(stepIndex, imageIndex, e.target.files[0]);
-                                        console.log('Image file for step', stepIndex, 'image', imageIndex, 'set to:', e.target.files[0]);
-                                    }}
-                                />
-                            </label>
-                            <button type="button" onClick={() => {
-                                const updatedSteps = [...steps];
-                                updatedSteps[stepIndex].images.splice(imageIndex, 1);
-                                setSteps(updatedSteps);
-                            }}>Delete Image {imageIndex + 1}</button>
-                        </div>
-                    ))}
-                    <button type="button" onClick={() => {
-                        const updatedSteps = [...steps];
-                        updatedSteps[stepIndex].images.push(null);
-                        setSteps(updatedSteps);
-                    }}>Add Image</button>
+            <Form.Item label="Steps">
+  {steps.map((step, stepIndex) => (
+    <div key={stepIndex}>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Form.Item label={`Step ${step.step_number}`}>
+          <Input
+            value={step.content}
+            onChange={(e) => updateStep(stepIndex, e.target.value)}
+          />
+        </Form.Item>
+      </Space>
+      <Form.Item>
+        {step.images.map((image, imageIndex) => (
+          <Space key={imageIndex} direction="horizontal" style={{ height: '100%' }}>
+            <div key={imageIndex}>
+              <label>
+                Image {imageIndex + 1} for step {step.step_number}:
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    handleImageInputChange(stepIndex, imageIndex, e.target.files[0]);
+                    console.log('Image file for step', stepIndex, 'image', imageIndex, 'set to:', e.target.files[0]);
+                  }}
+                />
+              </label>
+              <button type="button" onClick={() => {
+                const updatedSteps = [...steps];
+                updatedSteps[stepIndex].images.splice(imageIndex, 1);
+                setSteps(updatedSteps);
+              }}>Delete Image {imageIndex + 1}</button>
+            </div>
+          </Space>
+        ))}
+        <button type="button" onClick={() => {
+          const updatedSteps = [...steps];
+          updatedSteps[stepIndex].images.push(null);
+          setSteps(updatedSteps);
+        }}>Add Image</button>
+      </Form.Item>
+      <Form.Item>
+        {step.videos.map((video, videoIndex) => (
+          <Space key={videoIndex} direction="horizontal" style={{ height: '100%' }}>
+            <div key={videoIndex}>
+              <label>
+                Video {videoIndex + 1} for step {step.step_number}:
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    handleVideoInputChange(stepIndex, videoIndex, e.target.files[0], 'videos');
+                    console.log('Video file for step', stepIndex, 'video', videoIndex, 'set to:', e.target.files[0]);
+                  }}
+                />
+              </label>
+              <button type="button" onClick={() => {
+                const updatedSteps = [...steps];
+                updatedSteps[stepIndex].videos.splice(videoIndex, 1);
+                setSteps(updatedSteps);
+              }}>Delete Video {videoIndex + 1}</button>
+            </div>
+          </Space>
+        ))}
+        <button type="button" onClick={() => {
+          const updatedSteps = [...steps];
+          updatedSteps[stepIndex].videos.push(null);
+          setSteps(updatedSteps);
+        }}>Add Video</button>
+      </Form.Item>
+      <Form.Item>
+        <button type="button" onClick={() => {
+          const updatedSteps = [...steps];
+          updatedSteps.splice(stepIndex, 1);
+          setSteps(updatedSteps);
+        }}>Delete {step.step_number}</button>
+      </Form.Item>
+    </div>
+  ))}
 
-                    {step.videos.map((video, videoIndex) => (
-                        <div key={videoIndex}>
-                            <label>
-                            Video {videoIndex + 1} for step {step.step_number}:
-                            <input
-                                type="file"
-                                onChange={(e) => {
-                                    handleVideoInputChange(stepIndex, videoIndex, e.target.files[0], 'videos');
-                                    console.log('Video file for step', stepIndex, 'video', videoIndex, 'set to:', e.target.files[0]);
-                                }}
-                            />
-                            </label>
-                            <button type="button" onClick={() => {
-                                const updatedSteps = [...steps];
-                                updatedSteps[stepIndex].videos.splice(videoIndex, 1);
-                                setSteps(updatedSteps);
-                            }}>Delete Video {videoIndex + 1}</button>
-                            </div>
-                            ))}
-                            <button type="button" onClick={() => {
-                                const updatedSteps = [...steps];
-                                updatedSteps[stepIndex].videos.push(null);
-                                setSteps(updatedSteps);
-                            }}>Add Video</button>
+<Form.Item>
 
+                        
+<Button type="primary" onClick={addStep} icon={<PlusOutlined />}>
+        Add
+      </Button>
+    </Form.Item>
+</Form.Item>
 
-                    <button type="button" onClick={() => {
-                        const updatedSteps = [...steps];
-                        updatedSteps.splice(stepIndex, 1);
-                        setSteps(updatedSteps);
-                    }}>Delete Step {step.step_number}</button>
-                </div>
-            ))}
+    <Form.Item>
+      <Button type="primary" htmlType="submit">
+        Create Recipe and Add Images
+      </Button>
+    </Form.Item>
+  </Form>
+  </Col>
+  </Row>
+  </div>
 
-
-            <button type="button" onClick={addStep}>
-                Add Step
-            </button>
-
-            {/* Cover Image */}
-            <label>
-                Cover Image:
-                <input type="file" onChange={(e) => setCoverFile(e.target.files[0])} />
-            </label>
-
-            {/* Submit Button */}
-            <button type="submit">Create Recipe and Add Images</button>
-
-        </form>
     );
 };
 

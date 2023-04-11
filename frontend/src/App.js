@@ -12,7 +12,6 @@ import EditRecipe from "./components/EditRecipe";
 
 import SearchPage from "./components/SearchPage";
 import Profile from "./components/Profile";
-import EditProfile from "./components/EditProfile";
 import ShoppingList from "./components/ShoppingList";
 
 function App() {
@@ -29,7 +28,6 @@ function App() {
                     <Route path="/explore" element={<Explore/>}/>
                     <Route path="/search" element={<SearchPage/>}/>
                     <Route path="/accounts/profile/:user_id/" element={<Profile/>}/>
-                    <Route path="/accounts/profile/edit/" element={<EditProfile/>}/>
                     <Route path="/shoppinglist" element={<ShoppingList/>}/>
                 </Route>
             </Routes>
