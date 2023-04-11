@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useNavigate} from 'react';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
 import ContentList from './ContentList';
@@ -12,6 +12,7 @@ const Profile = () => {
 
     const [contentToShow, setContentToShow] = useState([]);
     const { user_id } = useParams();
+    const navigate = useNavigate();
 
     const changeContent = (number) => {
         if (number === 1) {
@@ -26,7 +27,7 @@ const Profile = () => {
     }
 
     const editProfileRedirect = () => {
-        window.location.href = "/accounts/profile/edit/";
+        navigate(`/accounts/profile/edit`);
     }
 
     useEffect(() => {
@@ -49,7 +50,7 @@ const Profile = () => {
                 <Title heading={3} style={{marginTop:8}}>{profile.first_name} {profile.last_name}</Title>
                 <Text type="secondary" style={{marginTop:8}}>@{profile.username}</Text>
             </div>
-                <Button onClick={() => {editProfileRedirect}} style={{marginTop:8}}>Edit Profile</Button>
+                <Button onClick={editProfileRedirect} style={{marginTop:8}}>Edit Profile</Button>
             <br></br>
             <div>
                 <Button onClick={() => {changeContent(1)}}>Created Recipes</Button>
