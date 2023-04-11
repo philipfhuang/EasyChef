@@ -46,7 +46,7 @@ export const MyNav = () => {
                     ]}
                     // onSelect={key => console.log(key)}
                     header={{
-                        logo: <img src={logo} style={{height: 40}}/>,
+                        logo: <img src={logo} style={{height: 40}} alt='logo'/>,
                         text: 'Easychef'
                     }}
                     footer={
