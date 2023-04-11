@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
-import { Form, Button, Tooltip } from '@douyinfe/semi-ui';
+import { Form, Button, Avatar, Tooltip } from '@douyinfe/semi-ui';
 
 const EditProfile = () => {
-    const [profile, setProfile] = useState({});
-    const user_id = localStorage.getItem('user');
+    const [first_name, setFirstName] = useState("");
+    const [last_name, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone_number, setPhoneNumber] = useState("");
+    const [avatar, setAvatar] = useState("");
+
+    const user_id = JSON.parse(localStorage.getItem('user')).id;
+    if (!user_id) {
+        window.location.href = "/login/";
+    }
 
     useEffect(() => {
         async function fetchData() {
@@ -13,7 +21,11 @@ const EditProfile = () => {
             await axios.get(`http://127.0.0.1:8000/accounts/profile/${user_id}/`)
             .then(response => {
                 //console.log(response.data);
-                setProfile(response.data);
+                setFirstName(response.data.first_name);
+                setLastName(response.data.last_name);
+                setEmail(response.data.email);
+                setPhoneNumber(response.data.phone_number);
+                setAvatar(response.data.avatar);
             })
         }
         fetchData();
@@ -21,14 +33,30 @@ const EditProfile = () => {
 
     const handleProfileChange = async () => {
         try {
+            let errors = {};
+
+            if (first_name === "") {
+                errors.first_name = "No First Name";
+            }
+            if (last_name === "") {
+                errors.last_name = "No Last Name";
+            }
+            if (validateEmail(email) !== "") {
+                errors.email = validateEmail(email);
+            }
+            if (validatePhone(phone_number) !== "") {
+                errors.phone_number = validatePhone(phone_number);
+            }
+            if (Object.keys(errors).length > 0) {
+                return errors;
+            }
+
             const storedToken = localStorage.getItem('token');
             const accessToken = JSON.parse(storedToken).access;
-    
-            const config = {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            };
 
-            //const { id } = useParams();
+            const config = {
+                headers: {Authorization: `Bearer ${accessToken}`}
+            };
 
             const formData = {
                 first_name: first_name,
@@ -37,33 +65,133 @@ const EditProfile = () => {
                 phone_number: phone_number,
                 avatar: avatar
             }
-            await axios.put('http://127.0.0.1:8000/accounts/profile/', formData, config);
+            console.log(formData);
+            await axios.patch('http://127.0.0.1:8000/accounts/profile/', formData, config);
         }
         catch (error) {
             console.log("Error uploading profile: ", error);
         }
     };
 
-    if (!email) {
-        return <div>Loading...</div>;
+    const input_width = 250;
+
+    const validatePhone = (phone) => {
+        if (!phone) {
+            return '';
+        }
+        const regex = /^\d{3}-\d{3}-\d{4}$/;
+        if (!regex.test(phone)) {
+            return "Phone number is invalid";
+        }
+        setPhoneNumber(phone);
+        return '';
     }
 
-    const input_width = 200;
+    const validateEmail = (email) => {
+        if (!email) {
+            return '';
+        }
+        const regex = /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/;
+        if (!regex.test(email)) {
+            return "Email is invalid";
+        }
+        setEmail(email);
+        return '';
+    }
+
+    const validateFirstName = (firstName) => {
+        if (!firstName) {
+            return 'No First Name';
+        }
+        setFirstName(firstName);
+        return '';
+    }
+
+    const validateLastName = (lastName) => {
+        if (!lastName) {
+            return 'No Last Name';
+        }
+        setLastName(lastName);
+        return '';
+    }
+
+    // const handleFileChange = async (avatar) => {
+    //     try {
+    //         setAvatar(avatar);
+
+    //         const storedToken = localStorage.getItem('token');
+    //         const accessToken = JSON.parse(storedToken).access;
+
+    //         const config = {
+    //             headers: {Authorization: `Bearer ${accessToken}`}
+    //         };
+            
+    //         const fileData = {
+    //             avatar: avatar
+    //         };
+    //         console.log(fileData);
+    //         await axios.patch('http://127.0.0.1:8000/accounts/profile/', fileData, config);
+    //     }
+    //     catch (error) {
+    //         console.log("Error uploading profile: ", error);
+    //     }
+    // }
+
+    const handleFileChange = (e) => {
+        // Get the selected image file
+        const selectedImage = e.target.files[0];
+    
+        // Update the state variable with the selected image
+        setAvatar(selectedImage);
+        console.log(avatar);
+    };
+    
+    console.log(first_name);
+    console.log(last_name);
+    console.log(email);
+    console.log(phone_number);
+
+    const submitChange = (value) => {
+
+        let form = new FormData();
+        form.append('avatar', avatar);
+        Object.keys(value).forEach(key => {
+            form.append(key, value[key]);
+        });
+
+        console.log("avatar", avatar);
+
+        
+        const storedToken = localStorage.getItem('token');
+        const accessToken = JSON.parse(storedToken).access;
+        const config = {
+            headers: {Authorization: `Bearer ${accessToken}`}
+        };
+        console.log("form",form);
+        axios.patch('http://127.0.0.1:8000/accounts/profile/', form, config);
+
+
+    }
     
     //Return the edit profile form
     return (
         <div>
-            <Form layout='vertical' onValueChange={values=>console.log(values)}>
-                <Form.Upload field='files' label='Avatar' initValue={{avatar}} style={{ width: input_width }}>
-                    <Button theme="light" onClick={handleAvatarChange}>
+            <Form layout='vertical' onValueChange={values=>console.log(values)} onSubmit={value=>{submitChange(value)}}>
+                <Avatar size="large" color='orange' style={{margin: "auto"}} src={avatar}>
+                    {first_name? first_name.charAt(0).toUpperCase()+last_name.charAt(0).toUpperCase():""}
+                </Avatar>
+                {/* <Form.Upload field='avatar' label='Avatar' onChange={handleFileChange} uploadTrigger="custom" style={{ width: input_width }}>
+                    <Button theme="light">
                         Upload Picture
                     </Button>
-                </Form.Upload>
-                <Form.Input field='FirstName' label='FirstName' onChange={handleFirstChange} initValue={{first_name}} style={{ width: input_width }}/>
-                <Form.Input field='LastName' label='LastName' onChange={handleLastChange} initValue={{last_name}} style={{ width: input_width }}/>
-                <Form.Input field='Email' label='email' onChange={handleEmailChange} initValue={{email}} style={{ width: input_width }}/>
-                <Form.Input field='PhoneNumber' label='PhoneNumber' onChange={handlePhoneChange} initValue={{phone_number}} style={{ width: input_width }}/>
-                <Button onClick={() => {handleProfileChange}}>Set change</Button>
+                </Form.Upload> */}
+                <br></br>
+                <input type="file" accept="image/*" name="avatar" onChange={e=>{setAvatar(e.target.files[0])}}/>
+                <Form.Input field='firstName' label='FirstName' key={first_name ? "fn" : "no_fn"} initValue={first_name} validate={validateFirstName} style={{ width: input_width }} type="text"/>
+                <Form.Input field='lastName' label='LastName' key={last_name ? "ln" : "no_ln"} initValue={last_name} validate={validateLastName} style={{ width: input_width }} type="text"/>
+                <Form.Input field='email' label='email' key={email ? "email" : "no_email"} validate={validateEmail} initValue={email} style={{ width: input_width }}/>
+                <Form.Input field='phonenumber' label='PhoneNumber' key={phone_number ? "phone_number" : "no_phone_number"} validate={validatePhone} initValue={phone_number} style={{ width: input_width }}/>
+                <Button htmlType='submit'>Set change</Button>
             </Form>
         </div>
     );

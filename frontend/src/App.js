@@ -10,7 +10,6 @@ import EditRecipe from "./components/EditRecipe";
 
 import SearchPage from "./components/SearchPage";
 import Profile from "./components/Profile";
-import EditProfile from "./components/EditProfile";
 import ShoppingList from "./components/ShoppingList";
 import ContentList from "./components/ContentList";
 
@@ -28,7 +27,6 @@ function App() {
                     <Route path="/explore" element={<ContentList content="explore"/>}/>
                     <Route path="/search" element={<SearchPage/>}/>
                     <Route path="/accounts/profile/:user_id/" element={<Profile/>}/>
-                    <Route path="/accounts/profile/edit/" element={<EditProfile/>}/>
                     <Route path="/shoppinglist" element={<ShoppingList/>}/>
                 </Route>
             </Routes>
