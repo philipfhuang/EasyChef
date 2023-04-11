@@ -16,7 +16,7 @@ export const MyNav = () => {
             navigate(`/login`)
             return
         }
-        navigate("/recipe/")
+        navigate("/createRecipe/")
     }
 
     return (
