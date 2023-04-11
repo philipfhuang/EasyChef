@@ -4,55 +4,20 @@ import { useParams } from "react-router-dom";
 import { Form, Button, Tooltip } from '@douyinfe/semi-ui';
 
 const EditProfile = () => {
-    const [first_name, setFirst] = useState(null);
-    const [last_name, setLast] = useState(null);
-    const [email, setEmail] = useState(null);
-    const [phone_number, setPhone] = useState(null);
-    const [avatar, setAvatar] = useState(null);
+    const [profile, setProfile] = useState({});
+    const user_id = localStorage.getItem('user');
 
     useEffect(() => {
         async function fetchData() {
-            try {
-                const user_id = localStorage.getItem('user');
-                console.log(user_id);
-                const response = await axios.get(`http://127.0.0.1:8000/accounts/profile/${user_id}/`,
-                {headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": true,
-                    "Access-Control-Allow-Origin": "*",
-                }
-            });
-            setFirst(response.data.first_name);
-            setLast(response.data.last_name);
-            setEmail(response.data.email);
-            setPhone(response.data.phone_number);
-            setAvatar(response.data.avatar);
-            } catch (error) {
-                console.error('Error fetching profile:', error);
-            }
+            //console.log("1")
+            await axios.get(`http://127.0.0.1:8000/accounts/profile/${user_id}/`)
+            .then(response => {
+                //console.log(response.data);
+                setProfile(response.data);
+            })
         }
         fetchData();
     }, []);
-
-    const handleFirstChange = (e) => {
-        setFirst(e.target.value);
-    };
-
-    const handleLastChange = (e) => {
-        setLast(e.target.value);
-    };
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePhoneChange = (e) => {
-        setPhone(e.target.value);
-    };
-
-    const handleAvatarChange = (e) => {
-        setAvatar(e.target.value);
-    };
 
     const handleProfileChange = async () => {
         try {
@@ -98,7 +63,7 @@ const EditProfile = () => {
                 <Form.Input field='LastName' label='LastName' onChange={handleLastChange} initValue={{last_name}} style={{ width: input_width }}/>
                 <Form.Input field='Email' label='email' onChange={handleEmailChange} initValue={{email}} style={{ width: input_width }}/>
                 <Form.Input field='PhoneNumber' label='PhoneNumber' onChange={handlePhoneChange} initValue={{phone_number}} style={{ width: input_width }}/>
-                <Button onClick={handleProfileChange}>Set change</Button>
+                <Button onClick={() => {handleProfileChange}}>Set change</Button>
             </Form>
         </div>
     );

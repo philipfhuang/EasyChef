@@ -25,6 +25,10 @@ const Profile = () => {
         }
     }
 
+    const editProfileRedirect = () => {
+        window.location.href = "/accounts/profile/edit/";
+    }
+
     useEffect(() => {
         async function fetchData() {
             await axios.get(`http://127.0.0.1:8000/accounts/profile/${user_id}/`)
@@ -45,6 +49,8 @@ const Profile = () => {
                 <Title heading={3} style={{marginTop:8}}>{profile.first_name} {profile.last_name}</Title>
                 <Text type="secondary" style={{marginTop:8}}>@{profile.username}</Text>
             </div>
+                <Button onClick={() => {editProfileRedirect}} style={{marginTop:8}}>Edit Profile</Button>
+            <br></br>
             <div>
                 <Button onClick={() => {changeContent(1)}}>Created Recipes</Button>
                 <Button onClick={() => {changeContent(2)}}>Liked Recipes</Button>
