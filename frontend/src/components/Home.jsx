@@ -12,7 +12,6 @@ export const Home = () => {
     const [recipes, setRecipes] = useState(null);
     const [topRecipes, setTopRecipes] = useState(null);
     const firstTime = useRef(true);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!firstTime.current) return;
@@ -21,8 +20,8 @@ export const Home = () => {
         async function getRecipes() {
             await axios.get('http://127.0.0.1:8000/search/?sort=sort')
                 .then(response => {
-                    setRecipes(response.data.results.slice(0, 6));
-                    setTopRecipes(response.data.results.slice(6));
+                    setRecipes(response.data.results.slice(0, 3));
+                    setTopRecipes(response.data.results.slice(3));
                 })
 
             let next = 'http://127.0.0.1:8000/search/?sort=sort&page=2';
@@ -40,7 +39,6 @@ export const Home = () => {
                         return prevState;
                     })
                 })
-            setLoading();
         }
         getRecipes();
     }, [])

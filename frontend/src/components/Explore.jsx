@@ -108,11 +108,11 @@ export const Explore = () => {
                 )}
             />
 
-                {loading ?
+
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
-                        <Spin size='large'/>
+                        {loading ?<Spin size='large'/>: ""}
                     </div>
-                    : <div style={{height:30}}></div>}
+
 
             <BackTop style={topStyle}>
                 <IconArrowUp />
