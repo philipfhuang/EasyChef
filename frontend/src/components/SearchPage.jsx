@@ -89,7 +89,7 @@ export const SearchPage = () => {
 
                 clearTimeout(timer);
                 timer = setTimeout(() => {
-                    axios.get(next.current)
+                    axios.get(next)
                         .then(response => {
                             setRecipes(prevState => {
                                 let newRecipes = [...prevState];
@@ -100,7 +100,7 @@ export const SearchPage = () => {
                                 })
                                 return newRecipes;
                             });
-                            next.current = response.data.next;
+                            next = response.data.next;
                             setLoading(false);
                         })
                 }, 500);
