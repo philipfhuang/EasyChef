@@ -5,8 +5,11 @@ import {Card, Checkbox, Empty, InputNumber, List} from "@douyinfe/semi-ui";
 import {useNavigate} from "react-router-dom";
 import Text from "@douyinfe/semi-ui/lib/es/typography/text";
 import {IconBookStroked} from "@douyinfe/semi-icons";
+import { Typography } from '@douyinfe/semi-ui';
 
 export const ShoppingList = () => {
+    const { Title } = Typography;
+
     const [shoppingList, setShoppingList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [serves, setServes] = useState({});
@@ -139,7 +142,7 @@ export const ShoppingList = () => {
 
     return (
         <div style={{width:1200, margin:"0 auto", marginTop: 20, marginBottom: 100}}>
-            <h1>My Shopping List</h1>
+            <Title heading={1} style={{marginTop:50, marginBottom:20}}>My Shopping List</Title>
             {shoppingList.length === 0 && !loading ? <Empty
                     style={{marginTop: 100}}
                     image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
