@@ -20,6 +20,7 @@ import './common.css'
 
 
 export const SearchPage = () => {
+    var timer = null;
     let navigate = useNavigate();
 
     const [recipes, setRecipes] = useState(null);
@@ -63,9 +64,7 @@ export const SearchPage = () => {
             axios.get(next)
                 .then(response => {
                     setRecipes(prevState => {
-                        console.log("seting state");
                         if (!prevState || changeSearch.current) {
-                            console.log("firsttime");
                             return [...response.data.results]
                         }
                         response.data.results.forEach(recipe => {
@@ -82,23 +81,29 @@ export const SearchPage = () => {
 
         window.addEventListener('scroll', function() {
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-                if (!next) {
+                if (!next.current) {
                     setLoading(false);
                     return;
                 }
                 setLoading(true);
-                axios.get(next)
-                    .then(response => {
-                        setRecipes(prevState => {
-                            if (!prevState) {
-                                console.log("firsttime");
-                                return response.data.results
-                            }
-                            console.log("not firsttime");
-                            return [...prevState, ...response.data.results]
+
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    axios.get(next.current)
+                        .then(response => {
+                            setRecipes(prevState => {
+                                let newRecipes = [...prevState];
+                                response.data.results.forEach(recipe => {
+                                    if (!newRecipes.includes(recipe)) {
+                                        newRecipes.push(recipe)
+                                    }
+                                })
+                                return newRecipes;
+                            });
+                            next.current = response.data.next;
+                            setLoading(false);
                         })
-                        next = response.data.next;
-                    })
+                }, 500);
             }
         });
 
@@ -136,7 +141,6 @@ export const SearchPage = () => {
 
     const submitSearch = async () => {
         if (!value) return;
-        console.log(value);
         changeSearch.current = true;
         setRecipes(null);
         setSearchParams({search: value});

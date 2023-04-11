@@ -1,4 +1,4 @@
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {BackTop, List, Rating, Spin, Typography} from "@douyinfe/semi-ui";
@@ -10,32 +10,24 @@ import './common.css'
 export const Explore = () => {
     let navigate = useNavigate();
 
-    const [recipes, setRecipes] = useState(null);
+    const [recipes, setRecipes] = useState([]);
     const firstTime = useRef(true);
     const [loading, setLoading] = useState(false);
 
-    var next = 'http://127.0.0.1:8000/search/?sort=sort';
+    var timer = null;
+
+    const next = useRef('http://127.0.0.1:8000/search/?sort=sort')
 
     useEffect(() => {
         if (!firstTime.current) return;
         firstTime.current = false;
 
         async function getRecipes() {
-            axios.get(next)
+            axios.get(next.current)
                 .then(response => {
-                    setRecipes(prevState => {
-                        if (!prevState) {
-                            return [...response.data.results]
-                        }
-                        response.data.results.forEach(recipe => {
-                            if (!prevState.includes(recipe)) {
-                                prevState.push(recipe)
-                            }
-                        })
-                        return prevState;
-                    })
-                    next = response.data.next;
-                    if (!next) {
+                    setRecipes(response.data.results);
+                    next.current = response.data.next;
+                    if (!next.current) {
                         setLoading(false);
                     }
                 })
@@ -44,28 +36,29 @@ export const Explore = () => {
 
         window.addEventListener('scroll', function() {
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-                if (!next) {
+                if (!next.current) {
                     setLoading(false);
                     return;
                 }
                 setLoading(true);
-                axios.get(next)
-                    .then(response => {
-                        console.log("get data")
-                        setRecipes(prevState => {
-                            console.log("setdata")
-                            if (!prevState) {
-                                return [...response.data.results]
-                            }
-                            response.data.results.forEach(recipe => {
-                                if (!prevState.includes(recipe)) {
-                                    prevState.push(recipe)
-                                }
-                            })
-                            return prevState;
+
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    axios.get(next.current)
+                        .then(response => {
+                            setRecipes(prevState => {
+                                let newRecipes = [...prevState];
+                                response.data.results.forEach(recipe => {
+                                    if (!newRecipes.includes(recipe)) {
+                                        newRecipes.push(recipe)
+                                    }
+                                })
+                                return newRecipes;
+                            });
+                            next.current = response.data.next;
+                            setLoading(false);
                         })
-                        next = response.data.next;
-                    })
+                }, 500);
             }
         });
 
@@ -119,7 +112,7 @@ export const Explore = () => {
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
                         <Spin size='large'/>
                     </div>
-                    : <></>}
+                    : <div style={{height:30}}></div>}
 
             <BackTop style={topStyle}>
                 <IconArrowUp />
