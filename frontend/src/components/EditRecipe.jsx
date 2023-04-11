@@ -4,6 +4,8 @@ import { Image } from '@douyinfe/semi-ui';
 import { AutoComplete } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
 import { Input, Icon } from 'antd';
+import { useParams } from 'react-router-dom';
+
 
 
 const EditRecipe = () => {
@@ -32,6 +34,8 @@ const EditRecipe = () => {
     const [stepImageFiles, setStepImageFiles] = useState([]);
     const [stepVideoFiles, setStepVideoFiles] = useState([]);
     const [createdStepIds, setCreatedStepIds] = useState([]);
+    const { id } = useParams();
+
 
 
   
@@ -39,7 +43,7 @@ const EditRecipe = () => {
     useEffect(() => {
         async function fetchRecipe() {
             try {
-              const response = await axios.get('http://127.0.0.1:8000/posts/recipe/46/');
+              const response = await axios.get(`http://127.0.0.1:8000/posts/recipe/${id}/`);
               console.log(response.data)
               const recipe = response.data;
               setCreatedStepIds(recipe.steps.map(step => step.id));
@@ -57,11 +61,13 @@ const EditRecipe = () => {
               setCuisines(recipe.cuisines.map(cuisine => cuisine.cuisine.name));
               // setSteps if you have a steps state
               setRecipe(recipe); 
-              setSteps(recipe.steps.map(step => ({
+              setSteps(recipe.steps.map((step) => ({
                 id: step.id,
+                step_number: step.step_number,
                 content: step.content,
-                images: step.images.map(image => image.image),
-                videos: step.videos.map(video => video.video)
+                recipe: step.recipe,
+                images: step.images,
+                videos: step.videos
                 })));
               setCoverFile(recipe.cover);
         
@@ -135,7 +141,8 @@ const EditRecipe = () => {
     };
 
     const addStepVideo = async (stepId, videoFiles) => {
-        if (!stepId || !videoFiles || videoFiles.length === 0) {
+        const newVideoFiles = videoFiles.map((video) => video.file);
+        if (!stepId || !newVideoFiles || newVideoFiles.length === 0) {
             console.error(`Error adding videos to step ${stepId}: No step ID or video files.`);
             return;
         }
@@ -148,7 +155,7 @@ const EditRecipe = () => {
         };
 
         // Iterate over videoFiles and make an API call for each video
-        for (const videoFile of videoFiles) {
+        for (const videoFile of newVideoFiles) {
             const formData = new FormData();
             formData.append('step', stepId);
             formData.append('video', videoFile);
@@ -158,11 +165,8 @@ const EditRecipe = () => {
                 console.log(`Video added to step ${stepId} successfully!`);
             } catch (error) {
                 console.error(`Error adding video to step ${stepId}:`, error);
-                alert(`Failed to add video to step ${stepId}.`);
             }
         }
-
-        alert(`All videos added to step ${stepId} successfully!`);
     };
 
     const updateCoverAndAddStepImages = async (recipeId, stepIds, steps) => {
@@ -178,6 +182,361 @@ const EditRecipe = () => {
     
 
     const addStepImage = async (stepId, imageFiles) => {
+
+        const newImageFiles = imageFiles.map((image) => image.file);
+        if (!stepId || !newImageFiles || newImageFiles.length === 0) {
+            console.error(`Error adding images to step ${stepId}: No step ID or image files.`);
+            return;
+        }
+    
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        };
+    
+        // Iterate over imageFiles and make an API call for each image
+        for (const imageFile of newImageFiles) {
+            const formData = new FormData();
+            formData.append('step', stepId);
+            formData.append('image', imageFile);
+    
+            try {
+                await axios.post('http://127.0.0.1:8000/posts/stepImage/', formData, config);
+                console.log(`Image added to step ${stepId} successfully!`);
+            } catch (error) {
+                console.error(`Error adding image to step ${stepId}:`, error);
+            }
+        }
+    
+    };
+    
+
+    const updateCover = async (recipeId) => {
+        if (!recipeId || !coverFile) {
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append('cover', coverFile);
+        formData.append('id', recipeId);
+    
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        };
+    
+        try {
+            await axios.patch(`http://127.0.0.1:8000/posts/recipeUpdate/`, formData, config);
+        } catch (error) {
+            console.error('Error updating cover image:', error);
+        }
+    };
+    
+
+    const addDiet = async (item) => {
+        if (typeof item === "object") {
+          setDiets([...diets, item.label]);
+          await addDietToAPI(recipeId, item.label);
+        } else if (typeof item === "string" && item.trim()) {
+          setDiets([...diets, item]);
+          await addDietToAPI(recipeId, item);
+        }
+    };
+
+    const addDietToAPI = async (recipe_id, diet_name) => {
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        };
+
+        try {
+          await axios.post("http://127.0.0.1:8000/posts/recipeDiet/", {
+            recipe_id,
+            diet_name
+          }, config);
+        } catch (error) {
+          console.error("Error adding diet to API:", error);
+        }
+    };
+
+    const deleteDietFromAPI = async (recipe_id, diet_name) => {
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+          },
+          data: {
+            recipe_id: recipe_id,
+            diet_name: diet_name,
+          },
+        };
+              
+        try {
+          await axios.delete("http://127.0.0.1:8000/posts/recipeDietDelete/", config);
+        } catch (error) {
+          console.error("Error deleting diet from API:", error);
+        }
+    };
+
+
+    const addCuisine = async (item) => {
+        if (typeof item === "object") {
+          setCuisines([...cuisines, item.label]);
+          await addCuisineToAPI(recipeId, item.label);
+        } else if (typeof item === "string" && item.trim()) {
+          setCuisines([...cuisines, item]);
+          await addCuisineToAPI(recipeId, item);
+        }
+    };
+
+    const addCuisineToAPI = async (recipe_id, cuisine_name) => {
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        };
+        try {
+          await axios.post("http://127.0.0.1:8000/posts/recipeCuisine/", {
+            recipe_id,
+            cuisine_name,
+          }, config);
+        } catch (error) {
+          console.error("Error adding cuisine to API:", error);
+        }
+    };
+
+    const deleteCuisineFromAPI = async (recipe_id, cuisine_name) => {
+
+        const config = {
+            headers: {
+              'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+            },
+            data: {
+              recipe_id: recipe_id,
+              cuisine_name: cuisine_name,
+            },
+        };
+
+        try {
+          await axios.delete("http://127.0.0.1:8000/posts/recipeCuisineDelete/", config);
+        } catch (error) {
+          console.error("Error deleting cuisine from API:", error);
+        }
+    };
+
+    const saveIngredients = async () => {
+        for (const ingredientQuantity of ingredientQuantities) {
+          if (!ingredientQuantity.id) {
+            await createIngredient(ingredientQuantity);
+          } else {
+            await updateIngredient(ingredientQuantity);
+          }
+        }
+    };
+
+
+    const createIngredient = async (ingredientQuantity) => {
+        const data = {
+        ingredient_name: ingredientQuantity.ingredient,
+        quantity: ingredientQuantity.quantity,
+        recipe_id: recipeId,
+        unit_name: ingredientQuantity.unit,
+        };
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        }; 
+
+        try {
+            await axios.post('http://127.0.0.1:8000/posts/ingredientQuantity/', data, config);
+          } catch (error) {
+            console.error('Error creating ingredient:', error);
+          }
+    };
+
+    const updateIngredient = async (ingredientQuantity) => {
+        const data = {
+          ingredient_name: ingredientQuantity.ingredient,
+          quantity: ingredientQuantity.quantity,
+          recipe_id: recipeId,
+          unit_name: ingredientQuantity.unit,
+          id: ingredientQuantity.id,
+        };
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        }; 
+      
+        try {
+          await axios.patch('http://127.0.0.1:8000/posts/ingredientQuantityUpdate/', data, config);
+        } catch (error) {
+          console.error('Error updating ingredient:', error);
+        }
+    };
+
+    const deleteIngredient = async (index) => {
+        const ingredientQuantity = ingredientQuantities[index];
+
+        const config = {
+            headers: {
+              'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+            },
+            data: {
+              id: ingredientQuantity.id,
+            },
+        };
+
+
+        if (ingredientQuantity.id) {
+          try {
+            await axios.delete('http://127.0.0.1:8000/posts/ingredientQuantityDelete/', config);
+          } catch (error) {
+            console.error('Error deleting ingredient:', error);
+          }
+        }
+      
+        const updatedQuantities = [...ingredientQuantities];
+        updatedQuantities.splice(index, 1);
+        setIngredientQuantities(updatedQuantities);
+    };
+
+    const addIngredientQuantity = () => {
+        setIngredientQuantities([...ingredientQuantities, { unit: '', quantity: '', ingredient: '' }]);
+    };
+
+    const updateIngredientQuantity = (index, field, value) => {
+        const updatedQuantities = [...ingredientQuantities];
+        updatedQuantities[index][field] = value;
+        setIngredientQuantities(updatedQuantities);
+    };
+
+
+
+    const addStep = () => {
+        const newStep = {
+          id: null,
+          step_number: steps.length + 1,
+          content: "",
+          images: [{ id: null, file: null }],
+          videos: [{ id: null, file: null }],
+        };
+        setSteps([...steps, newStep]);
+      };
+    
+
+    const handleImageInputChange = (stepIndex, imageIndex, file) => {
+        const updatedSteps = [...steps];
+        updatedSteps[stepIndex].images[imageIndex] = { id: null, file };
+        setSteps(updatedSteps);
+      };
+    
+    const handleVideoInputChange = (stepIndex, videoIndex, file) => {
+        const updatedSteps = [...steps];
+        updatedSteps[stepIndex].videos[videoIndex] = { id: null, file };
+        setSteps(updatedSteps);
+    };
+
+    const updateStep = (index, value) => {
+        const updatedSteps = [...steps];
+        updatedSteps[index].content = value;
+        setSteps(updatedSteps);
+    };
+
+    const saveSteps = async () => {
+        for (const step of steps) {
+            if (!step.id) {
+                await createStep(step);
+            } else {
+                await updateStepContent(step);
+                await addStepImage(step.id, step.images.filter((image) => image.id === null));
+                await addStepVideo(step.id, step.videos.filter((video) => video.id === null));
+            }
+        }
+    };
+
+    const createStep = async (step) => {
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        }; 
+
+        const data = {
+          recipe_id: recipeId,
+          step_number: step.step_number,
+          content: step.content,
+        };
+      
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/posts/step/', data, config);
+          const stepId = response.data.id;
+          await createStepImage(stepId, step.images);
+          await createStepVideo(stepId, step.videos);
+        } catch (error) {
+          console.error('Error creating step:', error);
+        }
+    };
+
+    const updateStepContent = async (step) => {
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        }; 
+
+        const data = {
+          id: step.id,
+          step_number: step.step_number,
+          content: step.content,
+        };
+      
+        try {
+          await axios.patch('http://127.0.0.1:8000/posts/stepUpdate/', data, config);
+          const stepId = step.id;
+          await createStepImage(stepId, step.images);
+          await createStepVideo(stepId, step.videos);
+        } catch (error) {
+          console.error('Error updating step:', error);
+        }
+    };
+
+    const deleteStep = async (stepId) => {
+        const config = {
+            headers: {
+              'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+            },
+            data: {
+              id: stepId,
+            },
+        };
+
+        try {
+          await axios.post('http://127.0.0.1:8000/posts/stepDelete/', config);
+        } catch (error) {
+          console.error('Error deleting step:', error);
+        }
+    };
+
+    const createStepImage = async (stepId, imageFiles) => {
+        // Reuse addStepImage() function from previous code
         if (!stepId || !imageFiles || imageFiles.length === 0) {
             console.error(`Error adding images to step ${stepId}: No step ID or image files.`);
             return;
@@ -201,95 +560,76 @@ const EditRecipe = () => {
                 console.log(`Image added to step ${stepId} successfully!`);
             } catch (error) {
                 console.error(`Error adding image to step ${stepId}:`, error);
-                alert(`Failed to add image to step ${stepId}.`);
             }
         }
     
-        alert(`All images added to step ${stepId} successfully!`);
     };
-    
 
-    const updateCover = async (recipeId) => {
-        if (!recipeId || !coverFile) {
-            alert('Please create a recipe and choose a cover image before updating the cover.');
+    const deleteStepImage = async (imageId) => {
+        const config = {
+            headers: {
+              'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+            },
+            data: {
+              id: imageId,
+            },
+        };
+
+
+        try {
+          await axios.delete('http://127.0.0.1:8000/posts/stepImageDelete/', config);
+        } catch (error) {
+          console.error('Error deleting step image:', error);
+        }
+    };
+
+    const createStepVideo = async (stepId, videoFiles) => {
+        // Reuse addStepVideo() function from previous code
+        if (!stepId || !videoFiles || videoFiles.length === 0) {
+            console.error(`Error adding videos to step ${stepId}: No step ID or video files.`);
             return;
         }
-    
-        const formData = new FormData();
-        formData.append('cover', coverFile);
-        formData.append('id', recipeId);
-    
+
         const config = {
             headers: {
                 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
                 'Content-Type': 'multipart/form-data',
             }
         };
-    
+
+        // Iterate over videoFiles and make an API call for each video
+        for (const videoFile of videoFiles) {
+            const formData = new FormData();
+            formData.append('step', stepId);
+            formData.append('video', videoFile);
+
+            try {
+                await axios.post('http://127.0.0.1:8000/posts/stepVideo/', formData, config);
+                console.log(`Video added to step ${stepId} successfully!`);
+            } catch (error) {
+                console.error(`Error adding video to step ${stepId}:`, error);
+            }
+        }
+
+    };
+
+    const deleteStepVideo = async (videoId) => {
+        const config = {
+            headers: {
+              'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
+            },
+            data: {
+              id: videoId,
+            },
+        };
+
         try {
-            await axios.patch(`http://127.0.0.1:8000/posts/recipeUpdate/`, formData, config);
-            alert('Cover image updated successfully!');
+          await axios.delete('http://127.0.0.1:8000/posts/stepVideoDelete/', config);
         } catch (error) {
-            console.error('Error updating cover image:', error);
-            alert('Failed to update cover image.');
+          console.error('Error deleting step video:', error);
         }
-    };
-    
+      };
 
-    const addDiet = (item) => {
-        if (typeof item === 'object') {
-            setDiets([...diets, item.label]);
-        } else if (typeof item === 'string' && item.trim()) {
-            setDiets([...diets, item]);
-        }
-    };
-
-    const addCuisine = (item) => {
-        if (typeof item === 'object') {
-            setCuisines([...cuisines, item.label]);
-        } else if (typeof item === 'string' && item.trim()) {
-            setCuisines([...cuisines, item]);
-        }
-    };
-
-    const addIngredientQuantity = () => {
-        setIngredientQuantities([...ingredientQuantities, { unit: '', quantity: '', ingredient: '' }]);
-    };
-
-    const updateIngredientQuantity = (index, field, value) => {
-        const updatedQuantities = [...ingredientQuantities];
-        updatedQuantities[index][field] = value;
-        setIngredientQuantities(updatedQuantities);
-    };
-
-    const addStep = () => {
-        setSteps([...steps, { step_number: steps.length + 1, content: '', images: [], videos: [] }]);
-    };
-    
-
-    const handleImageInputChange = (stepIndex, imageIndex, imageFile) => {
-        const updatedSteps = [...steps];
-        updatedSteps[stepIndex].images[imageIndex] = imageFile;
-        setSteps(updatedSteps);
-    };
-    
-    const handleVideoInputChange = (stepIndex, videoIndex, videoFile) => {
-        const updatedSteps = [...steps];
-        updatedSteps[stepIndex].videos[videoIndex] = videoFile;
-        setSteps(updatedSteps);
-    };
-
-    const deleteIngredient = (index) => {
-        const updatedQuantities = [...ingredientQuantities];
-        updatedQuantities.splice(index, 1);
-        setIngredientQuantities(updatedQuantities);
-    };
-
-    const updateStep = (index, value) => {
-        const updatedSteps = [...steps];
-        updatedSteps[index].content = value;
-        setSteps(updatedSteps);
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -438,7 +778,7 @@ const EditRecipe = () => {
     <input type="number" value={cookingTime} onChange={(e) => setCookingTime(e.target.value)} />
 </label>
 
-{/* <div>
+<div>
 <label>
     Diet:
     <Input
@@ -476,69 +816,71 @@ onClick={() => {
 {diets.map((dietItem, index) => (
 <div key={index}>
 <button
-    type="button"
-    onClick={() => {
-        const updatedDiets = [...diets];
-        updatedDiets.splice(index, 1);
-        setDiets(updatedDiets);
-    }}
->
+        type="button"
+        onClick={async () => {
+          const updatedDiets = [...diets];
+          updatedDiets.splice(index, 1);
+          setDiets(updatedDiets);
+          await deleteDietFromAPI(recipeId, dietItem);
+        }}
+      >
     Delete Diet
 </button>
 </div>
 ))}
-</div> */}
+</div>
 
-{/* <label>
-Cuisine:
-<Input
-value={cuisine}
-onChange={(e) => {
-setCuisine(e.target.value);
-searchCuisine(e.target.value);
-}}
-onPressEnter={() => addCuisine(cuisine)}
-/>
-<button type="button" onClick={() => addCuisine(cuisine)}>
-Add Cuisine
-</button>
+<label>
+  Cuisine:
+  <Input
+    value={cuisine}
+    onChange={(e) => {
+      setCuisine(e.target.value);
+      searchCuisine(e.target.value);
+    }}
+    onPressEnter={() => addCuisine(cuisine)}
+  />
+  <button type="button" onClick={() => addCuisine(cuisine)}>
+    Add Cuisine
+  </button>
 </label>
 <div>
-{cuisineSearchResults.map((result, index) => (
-<div
-key={index}
-onClick={() => {
-    addCuisine(result);
-    setCuisineSearchResults([]);
-}}
->
-{result.label}
-</div>
-))}
+  {cuisineSearchResults.map((result, index) => (
+    <div
+      key={index}
+      onClick={() => {
+        addCuisine(result);
+        setCuisineSearchResults([]);
+      }}
+    >
+      {result.label}
+    </div>
+  ))}
 </div>
 <ul>
-{cuisines.map((item, index) => (
-<li key={index}>{item}</li>
-))}
+  {cuisines.map((item, index) => (
+    <li key={index}>{item}</li>
+  ))}
 </ul>
 <div>
-{cuisines.map((cuisineItem, index) => (
-<div key={index}>
-<button
-    type="button"
-    onClick={() => {
-        const updatedCuisines = [...cuisines];
-        updatedCuisines.splice(index, 1);
-        setCuisines(updatedCuisines);
-    }}
->
-    Delete Cuisine
-</button>
+  {cuisines.map((cuisineItem, index) => (
+    <div key={index}>
+      <button
+        type="button"
+        onClick={async () => {
+          const updatedCuisines = [...cuisines];
+          updatedCuisines.splice(index, 1);
+          setCuisines(updatedCuisines);
+          await deleteCuisineFromAPI(recipeId, cuisineItem);
+        }}
+      >
+        Delete Cuisine
+      </button>
+    </div>
+  ))}
 </div>
-))}
-</div> */}
 
-{/* Ingredient Quantities
+Ingredient Quantities
 {ingredientQuantities.map((ingredientQuantity, index) => (
     <div key={index}>
         <label>
@@ -590,10 +932,14 @@ onClick={() => {
 ))}
 <button type="button" onClick={addIngredientQuantity}>
     Add Ingredient
-</button> */}
+</button>
+
+<button type="button" onClick={saveIngredients}>
+  Save Ingredients
+</button>
 
 {/* Steps */}
-{/* {steps.map((step, stepIndex) => (
+{steps.map((step, stepIndex) => (
     <div key={stepIndex}>
         <label>
             Step {step.step_number}:
@@ -616,17 +962,23 @@ onClick={() => {
                     />
                 </label>
                 <button type="button" onClick={() => {
+                    deleteStepImage(image.id);
                     const updatedSteps = [...steps];
                     updatedSteps[stepIndex].images.splice(imageIndex, 1);
                     setSteps(updatedSteps);
                 }}>Delete Image {imageIndex + 1}</button>
             </div>
         ))}
-        <button type="button" onClick={() => {
-            const updatedSteps = [...steps];
-            updatedSteps[stepIndex].images.push(null);
-            setSteps(updatedSteps);
-        }}>Add Image</button>
+<button
+  type="button"
+  onClick={() => {
+    const updatedSteps = [...steps];
+    updatedSteps[stepIndex].images.push({ id: null, file: null });
+    setSteps(updatedSteps);
+  }}
+>
+  Add Image
+</button>
 
         {step.videos.map((video, videoIndex) => (
             <div key={videoIndex}>
@@ -641,17 +993,23 @@ onClick={() => {
                 />
                 </label>
                 <button type="button" onClick={() => {
+                    deleteStepVideo(video.id);
                     const updatedSteps = [...steps];
                     updatedSteps[stepIndex].videos.splice(videoIndex, 1);
                     setSteps(updatedSteps);
                 }}>Delete Video {videoIndex + 1}</button>
                 </div>
                 ))}
-                <button type="button" onClick={() => {
-                    const updatedSteps = [...steps];
-                    updatedSteps[stepIndex].videos.push(null);
-                    setSteps(updatedSteps);
-                }}>Add Video</button>
+<button
+  type="button"
+  onClick={() => {
+    const updatedSteps = [...steps];
+    updatedSteps[stepIndex].videos.push({ id: null, file: null });
+    setSteps(updatedSteps);
+  }}
+>
+  Add Video
+</button>
 
 
         <button type="button" onClick={() => {
@@ -665,7 +1023,11 @@ onClick={() => {
 
 <button type="button" onClick={addStep}>
     Add Step
-</button> */}
+</button>
+
+<button type="button" onClick={saveSteps}>
+  Save Steps
+</button>
 
 {/* Cover Image */}
 <label>
@@ -678,8 +1040,6 @@ onClick={() => {
 
 </form></>
     );
-
-
 
 };
 

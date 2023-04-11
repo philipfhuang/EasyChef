@@ -8,6 +8,7 @@ import Signup from "./components/Signup";
 import Home from "./components/Home";
 import CreateRecipe from "./components/CreateRecipe";
 import Explore from "./components/Explore";
+import EditRecipe from "./components/EditRecipe";
 
 import SearchPage from "./components/SearchPage";
 import Profile from "./components/Profile";
@@ -24,6 +25,7 @@ function App() {
                     <Route path="/signup" element={<Signup/>}/>
                     <Route path="/recipe/:id" element={<Recipe/>}/>
                     <Route path="/createRecipe" element={<CreateRecipe/>}/>
+                    <Route path="/editRecipe/:id" element={<EditRecipe/>}/>
                     <Route path="/explore" element={<Explore/>}/>
                     <Route path="/search" element={<SearchPage/>}/>
                     <Route path="/accounts/profile/:user_id/" element={<Profile/>}/>
