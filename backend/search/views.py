@@ -110,6 +110,15 @@ class SearchFilterView(View):
                     'type': ingredient.id
                 }
                 data['results'].append(result)
+        elif search_type == 'unit':
+            units = Ingredient.objects.filter(unit__startswith=search_param)
+            for unit in units:
+                result = {
+                    'value': unit.name,
+                    'label': unit.name,
+                    'type': unit.id
+                }
+                data['results'].append(result)
 
         data['results'] = list(set(data['results']))
         data['results'] = data['results'][:5]
