@@ -24,7 +24,22 @@ export const ShoppingList = () => {
             }
             return
         }
+
         localStorage.setItem("serves", JSON.stringify(serves));
+
+        console.log(serves);
+        let newTotal = {};
+        Object.keys(serves).forEach((key) => {
+            if (serves[key].checked) {
+                if (serves[key].name in newTotal) {
+                    newTotal[serves[key].name] += serves[key].value * serves[key].people;
+                } else {
+                    newTotal[serves[key].name] = serves[key].value * serves[key].people;
+                }
+            }
+        })
+        setTotal(newTotal);
+        setTotalChanged(Math.random());
     }, [servesChanged])
 
     useEffect(() => {
@@ -32,7 +47,6 @@ export const ShoppingList = () => {
             if (localStorage.getItem("total")) {
                 setTotal(JSON.parse(localStorage.getItem("total")));
             }
-            console.log(total);
             return
         }
         localStorage.setItem("total", JSON.stringify(total));
@@ -45,8 +59,6 @@ export const ShoppingList = () => {
         if (localStorage.getItem("total")) {
             setTotal(JSON.parse(localStorage.getItem("total")));
         }
-
-
 
         let token;
         try {
@@ -76,69 +88,49 @@ export const ShoppingList = () => {
     }
     const updateServes = (target) => {
         let id = target.ingredId;
+        let name = target.children;
 
         if (id in serves && !target.checked) {
-            console.log("if");
             const newServes = {...serves};
             delete newServes[id];
             setServes(newServes);
             setServesChanged(Math.random());
 
-            const name = target.children;
-            const result = total[name].value - parseInt(target.extra.split(" ")[0]);
-
-            if (result <= 0) {
-                const newTotal = {...total};
-                delete newTotal[name];
-                setTotal(newTotal);
-                setTotalChanged(Math.random());
-            } else {
-                setTotal({...total, [name]: {
-                        value: result,
-                        people: total[name].people
-                    }});
-                setTotalChanged(Math.random());
-            }
         } else if (id in serves) {
-            console.log("else if");
-            let value = parseInt(target.extra.split(" ")[0]) + serves[target.ingredId].value;
-
+            let value = parseInt(target.extra.split(" ")[0]);
+            const newIdState = {
+                ...serves[id],
+                value: value,
+                checked: true
+            };
             setServes({...serves, [id]: {
-                    ...id,
-                    checked: true,
-                    value: value
+                    ...newIdState,
                 }});
             setServesChanged(Math.random());
-
-            const name = target.children;
-            setTotal({...total, [name]: {
-                    value: total[name].value + parseInt(target.extra.split(" ")[0]),
-                    people: total[name].people
-                }});
-            setTotalChanged(Math.random());
         } else {
-            console.log("else");
+            console.log("here");
+            let value = parseInt(target.extra.split(" ")[0]);
             setServes({...serves, [id]: {
-                    ...id,
+                    people: 1,
                     checked: true,
-                    value: parseInt(target.extra.split(" ")[0])
+                    value: value,
+                    name: name
                 }});
             setServesChanged(Math.random());
-
-            const name = target.children;
-            setTotal({...total, [name]: {
-                    value: (name in total ? total[name].value : 0) + parseInt(target.extra.split(" ")[0]),
-                    people: 1
-                }});
-            setTotalChanged(Math.random());
         }
     }
 
-    const addPeople = (id, people) => {
-        setServes({...serves, [id]: {
-                ...id,
-                people: people
-            }})
+    const addPeople = (id, people, name) => {
+        console.log(id, people, name);
+        const newIdState = {
+            ...serves[id],
+            people: people
+        }
+        setServes({
+            ...serves, [id]: {
+                ...newIdState,
+            }
+        });
         setServesChanged(Math.random());
     }
 
@@ -160,11 +152,11 @@ export const ShoppingList = () => {
                             <List.Item
                                 main={
                                 <>
-                                    <Checkbox key={item.id} aria-label={item.ingredients.name}
-                                              ingredId={item.ingredients.id}
+                                    <Checkbox key={item.id} aria-label={item.ingredients.ingredient.name}
+                                              ingredId={item.id}
                                               extra={`${item.ingredients.quantity} ${item.ingredients.unit.name}`}
                                               onChange={checked => updateServes(checked.target)}
-                                              checked={getChecked(item.ingredients.id)}
+                                              checked={getChecked(item.id)}
                                     >
                                         {item.ingredients.ingredient.name}
                                     </Checkbox>
@@ -172,11 +164,11 @@ export const ShoppingList = () => {
                                 </>
                                 }
                                 extra={
-                                    <InputNumber defaultValue={1}
-                                                 onNumberChange={(value)=>{addPeople(item.id, value)}}
+                                    <InputNumber defaultValue={serves[item.id] ? serves[item.id].people : 1}
+                                                 onNumberChange={(value)=>{addPeople(item.id, value, item.ingredients.ingredient.name)}}
                                                  min={1}
                                                  prefix={'For'}
-                                                 suffix={'People'}
+                                                 suffix={(serves[item.id] ? serves[item.id].people : 1)===1 ? "Person" : "People"}
                                                  style={{width:200}}
                                     />
                                 }
@@ -189,12 +181,18 @@ export const ShoppingList = () => {
                     >
                         <div style={{display:"flex", justifyContent:"space-between"}}>
                             <div style={{width:"100%"}}>
-                                <h3>Ingredients</h3>
                                 <ul style={{width:"100%"}}>
+                                    <li key={9999} style={{position:"relative", width:"80%", fontSize:20,
+                                        margin:"auto", display:"flex", textAlign:"center"}}>
+                                        <div style={{flex:1, fontWeight:"bold"}}>Ingredients</div>
+                                        <div style={{flex:1, fontWeight:"bold"}}>Total Quantity</div>
+                                    </li>
                                     {Object.keys(total).map((key, index) => {
                                         return (
-                                            <li key={index} style={{position:"relative", width:"100%"}}>
-                                                {key}: {total[key].value * total[key].people}
+                                            <li key={index} style={{position:"relative", width:"80%", fontSize:20,
+                                                margin:"auto", display:"flex", textAlign:"center"}}>
+                                                <div style={{flex:1}}>{key}</div>
+                                                <div style={{flex:1}}>{total[key]}</div>
                                             </li>)
                                     }
                                     )}
