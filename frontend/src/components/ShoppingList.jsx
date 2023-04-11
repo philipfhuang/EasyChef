@@ -2,7 +2,9 @@ import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import IllustrationNoContent from "./IllustrationNoContent.tsx";
 import {Card, Checkbox, Empty, InputNumber, List} from "@douyinfe/semi-ui";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import Text from "@douyinfe/semi-ui/lib/es/typography/text";
+import {IconBookStroked} from "@douyinfe/semi-icons";
 
 export const ShoppingList = () => {
     const [shoppingList, setShoppingList] = useState([]);
@@ -160,7 +162,9 @@ export const ShoppingList = () => {
                                     >
                                         {item.ingredients.ingredient.name}
                                     </Checkbox>
-                                    <Link to={`/recipe/${item.ingredients.recipe}/`}>Go to recipe</Link>
+                                    <Text link={{href : `/recipe/${item.ingredients.recipe}/`}} icon={<IconBookStroked />} underline>
+                                        Go to recipe
+                                    </Text>
                                 </>
                                 }
                                 extra={
