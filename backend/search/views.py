@@ -111,7 +111,7 @@ class SearchFilterView(View):
                 }
                 data['results'].append(result)
         elif search_type == 'unit':
-            units = Unit.objects.filter(unit__startswith=search_param)
+            units = Unit.objects.filter(name__startswith=search_param)
             for unit in units:
                 result = {
                     'value': unit.name,
