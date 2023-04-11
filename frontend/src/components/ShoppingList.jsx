@@ -3,12 +3,11 @@ import axios from "axios";
 import IllustrationNoContent from "./IllustrationNoContent.tsx";
 import {Card, Checkbox, Empty, InputNumber, List} from "@douyinfe/semi-ui";
 import {useNavigate} from "react-router-dom";
-import Text from "@douyinfe/semi-ui/lib/es/typography/text";
 import {IconBookStroked} from "@douyinfe/semi-icons";
 import { Typography } from '@douyinfe/semi-ui';
 
 export const ShoppingList = () => {
-    const { Title } = Typography;
+    const { Title, Text } = Typography;
 
     const [shoppingList, setShoppingList] = useState([]);
     const [loading, setLoading] = useState(true);
