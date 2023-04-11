@@ -1,10 +1,10 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from accounts.views import AddShoppingListItemView, DeleteShoppingListItemView, \
-    FavorView, LikeView, ShoppingListView, SignUpView, UnfavorView, UnlikeView, \
-    UserUpdateView, \
-    UserView, LogoutView
+from accounts.views import AddShoppingListItemView, CreatedRecipeListView, \
+    DeleteShoppingListItemView, FavorView, FavouriteRecipeListView, \
+    InteractedRecipeListView, LikeView, ShoppingListView, SignUpView, \
+    UnfavorView, UnlikeView, UserUpdateView, UserView, LogoutView
 
 urlpatterns = [
     path('login/', TokenObtainPairView.as_view()),
@@ -20,4 +20,7 @@ urlpatterns = [
     path('unlike/', UnlikeView.as_view()),
     path('favor/', FavorView.as_view()),
     path('unfavor/', UnfavorView.as_view()),
+    path('created/<int:uid>/', CreatedRecipeListView.as_view()),
+    path('favourited/<int:uid>/', FavouriteRecipeListView.as_view()),
+    path('interated/<int:uid>/', InteractedRecipeListView.as_view()),
 ]

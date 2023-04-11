@@ -258,3 +258,19 @@ class RecipeSerializer(serializers.ModelSerializer):
         if avg is None:
             return 0
         return avg
+
+
+class SimpleRecipeSerializer(serializers.ModelSerializer):
+    avg_rating = serializers.SerializerMethodField('get_avg_rating',
+                                                   read_only=True)
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'title', 'cover', 'creator', 'description',
+                  'cooking_time', 'avg_rating')
+
+    def get_avg_rating(self, obj):
+        avg = obj.comments.all().aggregate(Avg('rating'))['rating__avg']
+        if avg is None:
+            return 0
+        return avg

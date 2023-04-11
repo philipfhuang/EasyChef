@@ -1,15 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import { useParams ,useNavigate } from "react-router-dom";
 import ContentList from './ContentList';
-import { Avatar, Button, Typography, Tabs, TabPane } from '@douyinfe/semi-ui';
+import {Avatar, Button, Typography, Tabs, TabPane, List, Rating, Spin, BackTop} from '@douyinfe/semi-ui';
+import {IconArrowUp} from "@douyinfe/semi-icons";
 
 const Profile = () => {
 
     const { Title, Text } = Typography;
-
     const [profile, setProfile] = useState({});
-
     const [contentToShow, setContentToShow] = useState([]);
     const { user_id } = useParams();
     const navigate = useNavigate();
@@ -52,17 +51,18 @@ const Profile = () => {
                 <Text type="secondary" style={{marginTop:8}}>Email: {profile.email?profile.email:"-"}</Text>
                 <Text type="secondary" style={{marginTop:8}}>Phone: {profile.phone_number?profile.phone_number:"-"}</Text>
             </div>
-                <Button onClick={editProfileRedirect} style={{marginTop:8}}>Edit Profile</Button>
-            <br></br>
-            <div>
-                <Button onClick={() => {changeContent(1)}}>Created Recipes</Button>
-                <Button onClick={() => {changeContent(2)}}>Liked Recipes</Button>
-                <Button onClick={() => {changeContent(3)}}>Favorited Recipes</Button>
-                <Button onClick={() => {changeContent(4)}}>Commented Recipes</Button>
-            </div>
-            <div>
-                <ContentList content={contentToShow}/>
-            </div>
+            <Button onClick={editProfileRedirect} style={{marginTop:8}}>Edit Profile</Button>
+            <Tabs type="line" style={{fix:1, width:"100%"}}>
+                <TabPane tab="Created" itemKey="1">
+                    <ContentList content="created" />
+                </TabPane>
+                <TabPane tab="Favorite" itemKey="2">
+                    <ContentList content="favourited" />
+                </TabPane>
+                <TabPane tab="Interacted" itemKey="3">
+                    <ContentList content="interated" />
+                </TabPane>
+            </Tabs>
         </div>
     );
 }

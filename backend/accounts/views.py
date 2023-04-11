@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -6,10 +7,10 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from accounts.serializers import FavorSerializer, LikeSerializer, \
-    UserSerializer
+from accounts.serializers import FavorSerializer, LikeSerializer, UserSerializer
 from accounts.models import Favorite, Like, ShoppingListItem, User
 from accounts.ShoppingListItemSerializer import ShoppingListItemSerializer
+from posts.serializers import SimpleRecipeSerializer
 from recipes.models import Recipe
 
 
@@ -91,3 +92,27 @@ class DeleteShoppingListItemView(DestroyAPIView):
         if id:
             id = id[0]
         return get_object_or_404(ShoppingListItem, id=id, userid=self.request.user)
+
+class CreatedRecipeListView(ListAPIView):
+    serializer_class = SimpleRecipeSerializer
+
+    def get_queryset(self):
+        user = self.kwargs.get('uid')
+        return Recipe.objects.filter(creator=user)
+
+class FavouriteRecipeListView(ListAPIView):
+    serializer_class = SimpleRecipeSerializer
+
+    def get_queryset(self):
+        user = self.kwargs.get('uid')
+        print(user)
+        return Recipe.objects.filter(favorites__userid=user)
+
+class InteractedRecipeListView(ListAPIView):
+    serializer_class = SimpleRecipeSerializer
+
+    def get_queryset(self):
+        user = self.kwargs.get('uid')
+        return Recipe.objects.filter(Q(likes__userid=user) |
+                                     Q(creator=user) |
+                                     Q(comments__userid=user))
