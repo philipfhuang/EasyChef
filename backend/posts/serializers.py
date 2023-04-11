@@ -248,7 +248,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def get_total_likes(self, obj):
-        return obj.likes.count()
+        likes = obj.likes.count()
+        if likes is None:
+            return 0
+        return likes
 
     def get_avg_rating(self, obj):
-        return obj.comments.all().aggregate(Avg('rating'))['rating__avg']
+        avg = obj.comments.all().aggregate(Avg('rating'))['rating__avg']
+        if avg is None:
+            return 0
+        return avg
