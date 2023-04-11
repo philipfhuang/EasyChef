@@ -64,11 +64,11 @@ export const UserInfo = () => {
                         </div>
                     </Dropdown.Title>
                     <Dropdown.Divider/>
+                    <Dropdown.Item icon={<IconUser/>} onClick={()=>{RouterChange(`accounts/profile/${user.id}`, true)}}>
+                        My Profile
+                    </Dropdown.Item>
                     <Dropdown.Item icon={<IconEdit/>} onClick={()=>{RouterChange("profile", true)}}>
                         Edit Profile
-                    </Dropdown.Item>
-                    <Dropdown.Item icon={<IconUser/>} onClick={()=>{RouterChange("profile/1", true)}}>
-                        My Profile
                     </Dropdown.Item>
                     <Dropdown.Item icon={<IconCart/>} onClick={()=>{RouterChange("shoppinglist", true)}}>
                         Shopping List
@@ -78,7 +78,7 @@ export const UserInfo = () => {
                     </Dropdown.Item>
                 </Dropdown.Menu>
             }>
-            <Link to={`/profile/1`} style={{textDecoration: "none", color:"black"}}>
+            <Link to={`accounts/profile/${user.id}`} style={{textDecoration: "none", color:"black"}}>
                 <Avatar size="small" color='orange' style={{margin: "auto"}} src={user.avatar}>
                     {`${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`}
                 </Avatar>
