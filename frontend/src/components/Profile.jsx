@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
 import ContentList from './ContentList';
-import { Avatar, Button, Tooltip } from '@douyinfe/semi-ui';
-// import { response } from 'express';
+import { Avatar, Button, Typography} from '@douyinfe/semi-ui';
 
 const Profile = () => {
+
+    const { Title, Text } = Typography;
 
     const [profile, setProfile] = useState({});
 
@@ -26,10 +27,8 @@ const Profile = () => {
 
     useEffect(() => {
         async function fetchData() {
-            //console.log("1")
             await axios.get(`http://127.0.0.1:8000/accounts/profile/${user_id}/`)
             .then(response => {
-                //console.log(response.data);
                 setProfile(response.data);
                 setContentToShow(response.data.created_recipes);
             })
@@ -38,18 +37,13 @@ const Profile = () => {
     }, []);
 
     return (
-        <div>
-            {
-                (profile.avatar ? (
-            <Avatar size="large" style={{ margin: 4 }} alt='User'>
-                {profile.avatar}
-            </Avatar>) : (
-                <p>No avatar</p>))
-            }
-            <div>
-                <h1>{profile.first_name} {profile.last_name}</h1>
-                <h2>{profile.email}</h2>
-                <h2>{profile.phone_number}</h2>
+        <div style={{width:'100%', maxWidth:800, margin: "0 auto", marginTop:10, display:"flex", flexDirection:"column", alignItems:"center"}}>
+            <div style={{flex:1, width:"100%", display:"flex", flexDirection:"column", alignItems:"center", marginTop:10 }}>
+                <Avatar size="large" color='orange' style={{margin: "auto"}} src={profile.avatar}>
+                    {profile.first_name? profile.first_name.charAt(0).toUpperCase()+profile.last_name.charAt(0).toUpperCase():""}
+                </Avatar>
+                <Title heading={3} style={{marginTop:8}}>{profile.first_name} {profile.last_name}</Title>
+                <Text type="secondary" style={{marginTop:8}}>@{profile.username}</Text>
             </div>
             <div>
                 <Button onClick={() => {changeContent(1)}}>Created Recipes</Button>
