@@ -356,7 +356,7 @@ const Recipe = () => {
                                         <Image
                                             key={index}
                                             src={img.image}
-                                            width={200}
+                                            width={320}
                                             height={200}
                                             alt={`lamp${index + 1}`}
                                             style={{marginRight: 5, objectFit: 'cover'}}
@@ -372,7 +372,7 @@ const Recipe = () => {
                                             width="320"
                                             height="240"
                                             controls
-                                            style={{marginTop: 10, marginRight: 5}}
+                                            style={{marginTop: -20, marginRight: 5}}
                                         >
                                             <source src={video.video} type="video/mp4"/>
                                         </video>
@@ -387,19 +387,20 @@ const Recipe = () => {
             <div style={{marginTop:20}}>
                 <Button
                     onClick={handleLike}
-                    style={{height:50, width:150, fontSize:30, color: "#976332"}}
+                    style={{height:30, width:200, fontSize:30, color: "#976332"}}
                     theme="borderless"
-                    icon={liked ? <IconLikeHeart style={{height:50, width:50, fontSize:50, color: "#976332"}}/>:
-                        <IconHeartStroked style={{height:50, width:50, fontSize:50, color: "#976332"}}/>}>
-                    {recipe.total_likes}
+                    icon={liked ? <IconLikeHeart style={{height:30, width:30, fontSize:30, color: "#976332"}}/>:
+                        <IconHeartStroked style={{height:30, width:30, fontSize:30, color: "#976332"}}/>}>
+                    Like! ({recipe.total_likes})
                 </Button>
                 &nbsp;&nbsp;&nbsp;
                 <Button
                     onClick={handleFavorite}
-                    style={{height:50, width:50}}
+                    style={{height:30, width:200, fontSize:30, color: "#976332"}}
                     theme="borderless"
-                    icon={favorited ? <IconBookmark style={{height:50, width:50, fontSize:50, color: "#976332"}}/>:
-                        <IconBookmarkAddStroked style={{height:50, width:50, fontSize:50, color: "#976332"}}/>}>
+                    icon={favorited ? <IconBookmark style={{height:30, width:30, fontSize:30, color: "#976332"}}/>:
+                        <IconBookmarkAddStroked style={{height:30, width:30, fontSize:30, color: "#976332"}}/>}>
+                    Favorite!
                 </Button>
             </div>
 
@@ -454,8 +455,8 @@ const Recipe = () => {
                                                             <Image
                                                                 key={index}
                                                                 src={img.image}
-                                                                width={200}
-                                                                height={200}
+                                                                width={100}
+                                                                height={100}
                                                                 alt={`lamp${index + 1}`}
                                                                 style={{marginRight: 5, objectFit: 'cover'}}
                                                             />
@@ -467,8 +468,8 @@ const Recipe = () => {
                                                         return (
                                                             <video
                                                                 key={index}
-                                                                width="320"
-                                                                height="240"
+                                                                width="100"
+                                                                height="100"
                                                                 controls
                                                                 style={{marginTop: 10, marginRight: 5}}
                                                             >
@@ -491,7 +492,6 @@ const Recipe = () => {
                             />
                         )
                     }
-                    <p>{comments.count}</p>
                     <div style={{marginTop: 30, marginBottom:30, width:"100%", display:"flex", justifyContent:"space-around"}}>
                         <Pagination
                             total={commentCount}
