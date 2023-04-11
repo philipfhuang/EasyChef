@@ -1,8 +1,8 @@
-import React, {useState, useEffect, useNavigate} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { useParams } from "react-router-dom";
+import { useParams ,useNavigate } from "react-router-dom";
 import ContentList from './ContentList';
-import { Avatar, Button, Typography} from '@douyinfe/semi-ui';
+import { Avatar, Button, Typography, Tabs, TabPane } from '@douyinfe/semi-ui';
 
 const Profile = () => {
 
@@ -39,7 +39,7 @@ const Profile = () => {
             })
         }
         fetchData();
-    }, []);
+    }, [user_id]);
 
     return (
         <div style={{width:'100%', maxWidth:800, margin: "0 auto", marginTop:10, display:"flex", flexDirection:"column", alignItems:"center"}}>
@@ -49,6 +49,8 @@ const Profile = () => {
                 </Avatar>
                 <Title heading={3} style={{marginTop:8}}>{profile.first_name} {profile.last_name}</Title>
                 <Text type="secondary" style={{marginTop:8}}>@{profile.username}</Text>
+                <Text type="secondary" style={{marginTop:8}}>Email: {profile.email?profile.email:"-"}</Text>
+                <Text type="secondary" style={{marginTop:8}}>Phone: {profile.phone_number?profile.phone_number:"-"}</Text>
             </div>
                 <Button onClick={editProfileRedirect} style={{marginTop:8}}>Edit Profile</Button>
             <br></br>
