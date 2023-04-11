@@ -282,6 +282,10 @@ const Recipe = () => {
 
     if (!recipe) return <div>Loading...</div>;
 
+    function onPageChange(currentPage) {
+        setCurrentPage(currentPage);
+    }
+
     return (
         <div style={{width: 1000, margin: "0 auto", marginTop: 20}}>
             <Title heading={1} style={{fontSize: 44, marginTop: 40}}>{recipe.title}</Title>
@@ -498,7 +502,7 @@ const Recipe = () => {
                             pageSize={15}
                             style={{ marginBottom: 12 }}
                             currentPage={currentPage}
-                            onPageChange={setCurrentPage}
+                            onPageChange={onPageChange}
                             onChange={() => {fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/${id}/?page=${currentPage}`)}}
                         ></Pagination>
                     </div>
