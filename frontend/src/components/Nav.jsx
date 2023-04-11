@@ -6,7 +6,6 @@ import {IconBriefStroked} from '@douyinfe/semi-icons';
 import logo from "../images/logo.png";
 import Search from "./Search";
 import UserInfo from "./UserInfo";
-import SearchContext, {useSearcContext} from "../contexts/SearchContext";
 
 export const MyNav = () => {
     let navigate = useNavigate();
