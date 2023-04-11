@@ -107,13 +107,9 @@ export const Explore = () => {
                     </List.Item>
                 )}
             />
-
-
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
-                        {loading ?<Spin size='large'/>: ""}
-                    </div>
-
-
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
+                {loading ?<Spin size='large'/>: ""}
+            </div>
             <BackTop style={topStyle}>
                 <IconArrowUp />
             </BackTop>
