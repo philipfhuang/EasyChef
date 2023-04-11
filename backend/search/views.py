@@ -4,7 +4,7 @@ from django.views import View
 from rest_framework.generics import ListAPIView
 
 from comments.models import Comment
-from recipes.models import Cuisine, Diet, Ingredient, Recipe
+from recipes.models import Cuisine, Diet, Ingredient, Recipe, Unit
 from posts.serializers import RecipeSerializer
 
 
@@ -111,7 +111,7 @@ class SearchFilterView(View):
                 }
                 data['results'].append(result)
         elif search_type == 'unit':
-            units = Ingredient.objects.filter(unit__startswith=search_param)
+            units = Unit.objects.filter(unit__startswith=search_param)
             for unit in units:
                 result = {
                     'value': unit.name,
