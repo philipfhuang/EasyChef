@@ -499,7 +499,7 @@ const Recipe = () => {
                     <div style={{marginTop: 30, marginBottom:30, width:"100%", display:"flex", justifyContent:"space-around"}}>
                         <Pagination
                             total={commentCount}
-                            pageSize={15}
+                            pageSize={12}
                             style={{ marginBottom: 12 }}
                             currentPage={page}
                             onPageChange={onPageChange}
