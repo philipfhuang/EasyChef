@@ -284,6 +284,7 @@ const Recipe = () => {
 
     function onPageChange(currentPage) {
         setPage(currentPage);
+        fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/${id}/?page=${currentPage}`)
     }
 
     return (
@@ -503,7 +504,6 @@ const Recipe = () => {
                             style={{ marginBottom: 12 }}
                             currentPage={page}
                             onPageChange={onPageChange}
-                            onChange={() => {fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/${id}/?page=${page}`)}}
                         ></Pagination>
                     </div>
 
