@@ -12,6 +12,7 @@ import SearchPage from "./components/SearchPage";
 import Profile from "./components/Profile";
 import ShoppingList from "./components/ShoppingList";
 import ContentList from "./components/ContentList";
+import EditProfile from './components/EditProfile';
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/explore" element={<ContentList content="explore"/>}/>
                     <Route path="/search" element={<SearchPage/>}/>
                     <Route path="/accounts/profile/:user_id/" element={<Profile/>}/>
+                    <Route path="/accounts/profile/edit" element={<EditProfile/>} />
                     <Route path="/shoppinglist" element={<ShoppingList/>}/>
                 </Route>
             </Routes>
