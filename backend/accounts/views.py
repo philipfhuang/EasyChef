@@ -115,4 +115,4 @@ class InteractedRecipeListView(ListAPIView):
         user = self.kwargs.get('uid')
         return Recipe.objects.filter(Q(likes__userid=user) |
                                      Q(creator=user) |
-                                     Q(comments__userid=user))
+                                     Q(comments__userid=user)).distinct()
