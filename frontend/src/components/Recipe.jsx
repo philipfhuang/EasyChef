@@ -25,6 +25,7 @@ import {
 
 import './Recipe_new.css'
 import IllustrationNoContent from "./IllustrationNoContent.tsx";
+import Illustration404 from "./Illustration404.tsx";
 
 
 const Recipe = () => {
@@ -318,7 +319,13 @@ const Recipe = () => {
     };
 
 
-    if (!recipe) return <div>Recipe Not Found</div>;
+    if (!recipe) return <div style={{display:"flex", justifyContent:"center", alignItems:"center", height:"60vh", width:"100%"}}>
+        <Empty
+            image={<Illustration404 style={{ width: 150, height: 150 }} />}
+            title={'Recipe Not Found'}
+            description="Opps, the recipe you are looking for does not exist."
+        />
+    </div>;
 
     function onPageChange(currentPage) {
         setPage(currentPage);
