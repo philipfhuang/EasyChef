@@ -342,7 +342,7 @@ const Recipe = () => {
                     ({recipe.comments.length})
                     &nbsp;
                     Cooking Time: {recipe.cooking_time} minutes
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     Creator: <Text
                     link={{href: `/accounts/profile/${recipe.creator.id}/`}}>{recipe.creator.username}</Text>
                     &nbsp;
