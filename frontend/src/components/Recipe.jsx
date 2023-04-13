@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {useParams} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import {
     Image,
@@ -50,11 +50,14 @@ const Recipe = () => {
     const [page, setPage] = useState(1);
     const [imageFiles, setImageFiles] = useState([]);
     const [videoFiles, setVideoFiles] = useState([]);
+    const [editMode, setEditMode] = useState(false);
 
     const [addComment, setAddComment] = useState(0);
     const {id} = useParams();
 
     const user = JSON.parse(localStorage.getItem('user'));
+    const uid = user.id;
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchData() {
@@ -64,6 +67,12 @@ const Recipe = () => {
 
                 const storedUser = JSON.parse(localStorage.getItem('user'));
                 console.log(storedUser);
+
+                if (uid == response.data.creator.id) {
+                    setEditMode(true);
+                }
+                
+                console.log(editMode);
 
                 if (storedUser.liked_recipes !== undefined) {
                     if (storedUser.liked_recipes.some(recipe => recipe.id === response.data.id)) {
@@ -85,6 +94,8 @@ const Recipe = () => {
 
         fetchData();
     }, [addComment]);
+
+    
 
     const fetchComments = async (url) => {
         try {
@@ -143,6 +154,10 @@ const Recipe = () => {
                 duration: 3,
             });
         }
+    };
+
+    const goEdit = () => {
+        navigate(`/editRecipe/${id}`);
     };
 
     const handleFavorite = async () => {
@@ -324,6 +339,18 @@ const Recipe = () => {
                 />
             ) : <></>}
             <Paragraph style={{marginTop: 20, fontSize: 18}}>{recipe.description}</Paragraph>
+            <br></br>
+
+            <Button                         style={{borderRadius: 5, backgroundColor: "#976332"}}
+                        type="primary"
+                        theme="solid"
+                        disabled={!editMode}
+                        onClick={goEdit}
+
+>
+            
+            Edit Recipe
+            </Button>
 
             <Divider margin='12px'/>
 
