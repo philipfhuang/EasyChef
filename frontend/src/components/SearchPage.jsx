@@ -307,12 +307,14 @@ export const SearchPage = () => {
                     </List.Item>
                 )}
             />
-            : <Empty
+            : <div style={{display:"flex", justifyContent:"center", alignItems:"center", height:"40vh", width:"100%"}}>
+                    <Empty
                     style={{marginTop: 100}}
                     image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}
                     title={'No Result'}
                     description="Seems like there is no result that matches your search"
                 />
+                </div>
             }
             {loading ?
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>

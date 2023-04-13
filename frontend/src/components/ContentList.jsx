@@ -1,11 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {Avatar, List, Button, Rating, Spin, BackTop, Typography, Empty} from '@douyinfe/semi-ui';
+import {List, Rating, Spin, BackTop, Typography, Empty} from '@douyinfe/semi-ui';
 import {IconArrowUp} from "@douyinfe/semi-icons";
 import axios from "axios";
 import IllustrationNoContent from "./IllustrationNoContent.tsx";
 
 const ContentList = (props) => {
+    const height = window.location.href.includes('explore') ? "60vh" : "100%";
     let navigate = useNavigate();
 
     const [recipes, setRecipes] = useState([]);
@@ -113,12 +114,15 @@ const ContentList = (props) => {
                             </div>
                         </List.Item>
                     )}
-                />:<Empty
-                    style={{marginTop: 100}}
-                    image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
-                    title={'No Recipes'}
-                    description="Let's add the first one!"
-                />
+                />:<div style={{display:"flex", justifyContent:"center", alignItems:"center", height:height, width:"100%"}}>
+                    <Empty
+                        style={{marginTop: 100}}
+                        image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
+                        title={'No Recipes'}
+                        description="Let's add the first one!"
+                    />
+                </div>
+
             }
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100}}>
                 {loading ?<Spin size='large'/>: ""}
