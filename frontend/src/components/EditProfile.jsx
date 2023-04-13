@@ -104,7 +104,10 @@ const EditProfile = () => {
                 </Avatar>
                 <br/>
                 <br/>
-                <input type="file" accept="image/*" name="avatarPreview" key={avatarPreview ? "avatarPreview" : "no_ap"} onChange={e=>{setAvatarPreview(e.target.files[0])}}/>
+                <input type="file" accept="image/*" name="avatarPreview" key={avatarPreview ? "avatarPreview" : "no_ap"} onChange={e=>{
+                    setAvatarPreview(e.target.files[0])
+                    Toast.success("Upload avatar successfully!");
+                }}/>
                 <br/>
                 <br/>
                 <Form.Input field='first_name' label='First Name' key={first_name ? "first_name" : "no_fn"} initValue={first_name} validate={validateFirstName} style={{ width: input_width }} type="text"/>
