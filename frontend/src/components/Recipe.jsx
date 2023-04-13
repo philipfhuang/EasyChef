@@ -295,7 +295,30 @@ const Recipe = () => {
         }
     };
 
-    if (!recipe) return <div>Loading...</div>;
+    const handleDelete = async (id) => {
+        try {
+            const storedToken = localStorage.getItem('token');
+            const accessToken = JSON.parse(storedToken).access;
+
+            const config = {
+                headers: {Authorization: `Bearer ${accessToken}`}
+            };
+
+            await axios.delete(`http://127.0.0.1:8000/posts/deleteRecipe/`, {
+                data: {id: id},
+                headers: config.headers
+            });
+
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+
+        }
+
+        navigate(`/`);
+    };
+
+
+    if (!recipe) return <div>Recipe Not Found</div>;
 
     function onPageChange(currentPage) {
         setPage(currentPage);
@@ -341,16 +364,31 @@ const Recipe = () => {
             <Paragraph style={{marginTop: 20, fontSize: 18}}>{recipe.description}</Paragraph>
             <br></br>
 
-            <Button                         style={{borderRadius: 5, backgroundColor: "#976332"}}
-                        type="primary"
-                        theme="solid"
-                        disabled={!editMode}
-                        onClick={goEdit}
 
->
-            
-            Edit Recipe
-            </Button>
+{editMode && (
+  <>
+    <Button
+      style={{ borderRadius: 5, backgroundColor: "#976332" }}
+      type="primary"
+      theme="solid"
+      onClick={goEdit}
+    >
+      Edit Recipe
+    </Button>
+
+    <Button
+      style={{ borderRadius: 5, backgroundColor: "#976332" }}
+      type="primary"
+      theme="solid"
+      onClick={(event) => handleDelete(id, event)}
+    >
+      Delete Recipe
+    </Button>
+  </>
+)}
+
+
+
 
             <Divider margin='12px'/>
 

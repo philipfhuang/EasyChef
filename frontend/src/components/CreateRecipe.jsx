@@ -40,7 +40,6 @@ const CreateRecipe = () => {
             setUnitSearchResults(updatedSearchResults);
         } catch (error) {
             console.error('Error searching for units:', error);
-            alert('Failed to search for units.');
         }
     };
 
@@ -60,7 +59,6 @@ const CreateRecipe = () => {
             setIngredientSearchResults(updatedSearchResults);
         } catch (error) {
             console.error('Error searching for ingredients:', error);
-            alert('Failed to search for ingredients.');
         }
     };
 
@@ -78,7 +76,6 @@ const CreateRecipe = () => {
             setCuisineSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
         } catch (error) {
             console.error('Error searching for cuisines:', error);
-            alert('Failed to search for cuisines.');
         }
     };
 
@@ -96,7 +93,6 @@ const CreateRecipe = () => {
             setDietSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
         } catch (error) {
             console.error('Error searching for diets:', error);
-            alert('Failed to search for diets.');
         }
     };
 
@@ -124,11 +120,9 @@ const CreateRecipe = () => {
                 console.log(`Video added to step ${stepId} successfully!`);
             } catch (error) {
                 console.error(`Error adding video to step ${stepId}:`, error);
-                alert(`Failed to add video to step ${stepId}.`);
             }
         }
 
-        alert(`All videos added to step ${stepId} successfully!`);
     };
 
     const updateCoverAndAddStepImages = async (recipeId, stepIds, steps) => {
@@ -167,17 +161,14 @@ const CreateRecipe = () => {
                 console.log(`Image added to step ${stepId} successfully!`);
             } catch (error) {
                 console.error(`Error adding image to step ${stepId}:`, error);
-                alert(`Failed to add image to step ${stepId}.`);
             }
         }
     
-        alert(`All images added to step ${stepId} successfully!`);
     };
     
 
     const updateCover = async (recipeId) => {
         if (!recipeId || !coverFile) {
-            alert('Please create a recipe and choose a cover image before updating the cover.');
             return;
         }
     
@@ -194,10 +185,8 @@ const CreateRecipe = () => {
     
         try {
             await axios.patch(`http://127.0.0.1:8000/posts/recipeUpdate/`, formData, config);
-            alert('Cover image updated successfully!');
         } catch (error) {
             console.error('Error updating cover image:', error);
-            alert('Failed to update cover image.');
         }
     };
     
@@ -284,7 +273,6 @@ const CreateRecipe = () => {
             const recipeId = response.data.id; // Extract the id from the returned JSON
             const createdStepIds = response.data.steps.map(step => step.id); // Extract step ids from the returned JSON
             console.log(createdStepIds)
-            alert('Recipe created successfully!');
         
             // Call updateCoverAndAddStepImages after successfully creating the recipe
             await updateCoverAndAddStepImages(recipeId, createdStepIds, steps);
@@ -293,7 +281,6 @@ const CreateRecipe = () => {
         
         } catch (error) {
             console.error('Error creating recipe:', error);
-            alert('Failed to create recipe.');
         }
     };
     
