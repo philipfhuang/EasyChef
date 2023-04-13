@@ -1,4 +1,4 @@
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator
 from django.db import models
 
 
@@ -101,7 +101,7 @@ class IngredientQuantity(models.Model):
                                    related_name='ingredient_quantities')
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE,
                                related_name='ingredient_quantities')
-    quantity = models.PositiveIntegerField()
+    quantity = models.FloatField(validators=[MinValueValidator(0.0)])
     unit = models.ForeignKey('Unit', on_delete=models.CASCADE,
                              related_name='ingredient_quantities', default=1)
 
