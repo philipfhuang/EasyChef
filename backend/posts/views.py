@@ -122,7 +122,7 @@ class RecipeDeleteView(DestroyAPIView):
 
     def get_object(self):
         id = self.request.data.get('id')
-        return get_object_or_404(Recipe, id=id, creator_id=self.request.user)
+        return get_object_or_404(Recipe, id=id, creator=self.request.user)
 
 
 class IngredientQuantityCreateView(CreateAPIView):
