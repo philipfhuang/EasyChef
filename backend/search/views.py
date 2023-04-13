@@ -22,11 +22,13 @@ class SearchView(ListAPIView):
 
     def get_queryset(self):
         search_param = self.request.GET.get('content')
-        if search_param is None:
-            search_param = ''
-        recipes = Recipe.objects.filter(Q(title__icontains=search_param) |
+        if search_param is not None:
+            recipes = Recipe.objects.filter(Q(title__icontains=search_param) |
                                         Q(creator__username__icontains=search_param) |
                                         Q(cuisines__cuisine__name__icontains=search_param))
+        else:
+            recipes = Recipe.objects.all()
+        print(recipes)
         cooktime = self.request.GET.get('cooktime')
         ingredients = self.request.GET.get('ingredient')
         diets = self.request.GET.get('diet')
