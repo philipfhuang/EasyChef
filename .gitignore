@@ -1,5 +1,2 @@
 .idea
 __pycache__
-backend/db.sqlite3
-**/uploads/avatars/*.*
-**/uploads/recipes/*.*
