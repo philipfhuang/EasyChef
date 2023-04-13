@@ -107,10 +107,10 @@ const EditProfile = () => {
                 <input type="file" accept="image/*" name="avatarPreview" key={avatarPreview ? "avatarPreview" : "no_ap"} onChange={e=>{setAvatarPreview(e.target.files[0])}}/>
                 <br/>
                 <br/>
-                <Form.Input field='first_name' label='FirstName' key={first_name ? "first_name" : "no_fn"} initValue={first_name} validate={validateFirstName} style={{ width: input_width }} type="text"/>
-                <Form.Input field='last_name' label='LastName' key={last_name ? "last_name" : "no_ln"} initValue={last_name} validate={validateLastName} style={{ width: input_width }} type="text"/>
-                <Form.Input field='email' label='email' key={email ? "email" : "no_email"} validate={validateEmail} initValue={email} style={{ width: input_width }}/>
-                <Form.Input field='phone_number' label='PhoneNumber' key={phone_number ? "phone_number" : "no_phone_number"} validate={validatePhone} initValue={phone_number} style={{ width: input_width }}/>
+                <Form.Input field='first_name' label='First Name' key={first_name ? "first_name" : "no_fn"} initValue={first_name} validate={validateFirstName} style={{ width: input_width }} type="text"/>
+                <Form.Input field='last_name' label='Last Name' key={last_name ? "last_name" : "no_ln"} initValue={last_name} validate={validateLastName} style={{ width: input_width }} type="text"/>
+                <Form.Input field='email' label='Email' key={email ? "email" : "no_email"} validate={validateEmail} initValue={email} style={{ width: input_width }}/>
+                <Form.Input field='phone_number' label='Phone Number' key={phone_number ? "phone_number" : "no_phone_number"} validate={validatePhone} initValue={phone_number} style={{ width: input_width }}/>
                 <Button htmlType='submit'>Set change</Button>
             </Form>
         </div>

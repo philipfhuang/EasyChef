@@ -93,7 +93,7 @@ export const Signup = () => {
                     <Form.Input field='last_name' label='Last Name' placeholder='Last Name' style={{width:"50%"}}/>
                 </Form.InputGroup>
                 <Form.Input field='username' label='Username' placeholder='Username'/>
-                <Form.Input field='phone' label='Phone' placeholder='Phone' validate={validatePhone}/>
+                <Form.Input field='phone_number' label='Phone' placeholder='Phone' validate={validatePhone}/>
                 <Form.Input field='email' label='Email' placeholder='Email' validate={validateEmail}/>
                 <Form.Input field='password' label='Password' placeholder='Password' mode='password'/>
                 <Form.Input field='password2' label='Confirm Password' placeholder='Confirm Password' mode='password'/>
