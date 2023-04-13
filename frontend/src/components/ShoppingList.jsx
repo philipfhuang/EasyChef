@@ -1,10 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import IllustrationNoContent from "./IllustrationNoContent.tsx";
-import {Card, Checkbox, Empty, InputNumber, List} from "@douyinfe/semi-ui";
+import {Card, Checkbox, Empty, InputNumber, List, Typography, Button} from "@douyinfe/semi-ui";
 import {useNavigate} from "react-router-dom";
 import {IconBookStroked} from "@douyinfe/semi-icons";
-import { Typography } from '@douyinfe/semi-ui';
 
 export const ShoppingList = () => {
     const { Title, Text } = Typography;
@@ -138,6 +137,37 @@ export const ShoppingList = () => {
         setServesChanged(Math.random());
     }
 
+    const deleteShoppingListItem = (id) => {
+        const token = JSON.parse(localStorage.getItem('token')).access;
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
+            },
+            data: {
+                id: id
+            }
+        };
+        axios.delete("http://127.0.0.1:8000/accounts/deleteShoppingList/", config)
+            .then(() => {
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    }
+                };
+                axios.get("http://localhost:8000/accounts/shoppinglists/", config)
+                    .then(response => {
+                        setShoppingList(response.data.results);
+                        setLoading(false);
+                    })
+                const newServes = {...serves};
+                delete newServes[id];
+                setServes(newServes);
+                setServesChanged(Math.random());
+            })
+    }
+
 
     return (
         <div style={{width:1200, margin:"0 auto", marginTop: 20, marginBottom: 100}}>
@@ -170,13 +200,17 @@ export const ShoppingList = () => {
                                 </>
                                 }
                                 extra={
+                                <>
                                     <InputNumber defaultValue={serves[item.id] ? serves[item.id].people : 1}
                                                  onNumberChange={(value)=>{addPeople(item.id, value, item.ingredients.ingredient.name)}}
                                                  min={1}
                                                  prefix={'For'}
                                                  suffix={(serves[item.id] ? serves[item.id].people : 1)===1 ? "Person" : "People"}
                                                  style={{width:200}}
+                                                 id={item.id}
                                     />
+                                    <Button type="danger" onClick={() => {deleteShoppingListItem(item.id)}}>Delete</Button>
+                                </>
                                 }
                             />
                         )}
@@ -187,9 +221,9 @@ export const ShoppingList = () => {
                     >
                         <div style={{display:"flex", justifyContent:"space-between"}}>
                             <div style={{width:"100%"}}>
-                                <ul style={{width:"100%"}}>
+                                <ul style={{width:"100%", margin:0, padding:0}}>
                                     <li key={9999} style={{position:"relative", width:"80%", fontSize:20,
-                                        margin:"auto", display:"flex", textAlign:"center"}}>
+                                        margin:"auto", display:"flex", textAlign:"center", marginBottom:10}}>
                                         <div style={{flex:1, fontWeight:"bold"}}>Ingredients</div>
                                         <div style={{flex:1, fontWeight:"bold"}}>Total Quantity</div>
                                     </li>
