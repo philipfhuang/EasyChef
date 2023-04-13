@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
-import { Form, Button, Avatar, Tooltip } from '@douyinfe/semi-ui';
+import { Form, Button, Avatar, Tooltip, Toast } from '@douyinfe/semi-ui';
 
 const EditProfile = () => {
     const [first_name, setFirstName] = useState("");
@@ -153,7 +153,7 @@ const EditProfile = () => {
             form.append('avatar', avatarPreview);
         }
         Object.keys(value).forEach(key => {
-            if (key !== 'avatarPreview' || (key === 'avatarPreview' && value[key] !== null)) {
+            if (key !== 'avatarPreview') {
                 form.append(key, value[key]);
             }
         });
@@ -166,14 +166,15 @@ const EditProfile = () => {
         console.log("form",form);
         axios.patch('http://127.0.0.1:8000/accounts/profile/', form, config);
         window.location.reload();
+        Toast.success("profile changed successfully!");
     }
 
     
     //Return the edit profile form
     return (
-        <div>
+        <div style={{width:'100%', maxWidth:800, margin: "0 auto", marginTop:10, display:"flex", flexDirection:"column", alignItems:"center"}}>
             <Form layout='vertical' onSubmit={value=>{submitChange(value)}}>
-                <Avatar size="large" color='orange' style={{margin: "auto"}} src={avatar}>
+                <Avatar size="extra-large" color='orange' style={{margin: "auto"}} src={avatar}>
                     {first_name? first_name.charAt(0).toUpperCase()+last_name.charAt(0).toUpperCase():""}
                 </Avatar>
                 {/* <Form.Upload field='avatar' label='Avatar' onChange={submitAvatar} uploadTrigger="custom" style={{ width: input_width }}>
@@ -182,7 +183,7 @@ const EditProfile = () => {
                     </Button>
                 </Form.Upload> */}
                 <br></br>
-                <input type="file" accept="image/*" name="avatarPreview" key="avatarPreview" onChange={e=>{setAvatarPreview(e.target.files[0])}}/>
+                <input type="file" accept="image/*" name="avatarPreview" key={avatarPreview ? "avatarPreview" : "no_ap"} onChange={e=>{setAvatarPreview(e.target.files[0])}}/>
                 <Form.Input field='first_name' label='FirstName' key={first_name ? "first_name" : "no_fn"} initValue={first_name} validate={validateFirstName} style={{ width: input_width }} type="text"/>
                 <Form.Input field='last_name' label='LastName' key={last_name ? "last_name" : "no_ln"} initValue={last_name} validate={validateLastName} style={{ width: input_width }} type="text"/>
                 <Form.Input field='email' label='email' key={email ? "email" : "no_email"} validate={validateEmail} initValue={email} style={{ width: input_width }}/>
