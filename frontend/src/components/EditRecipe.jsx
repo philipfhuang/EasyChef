@@ -123,7 +123,6 @@ const EditRecipe = () => {
             setUnitSearchResults(updatedSearchResults);
         } catch (error) {
             console.error('Error searching for units:', error);
-            alert('Failed to search for units.');
         }
     };
 
@@ -143,7 +142,6 @@ const EditRecipe = () => {
             setIngredientSearchResults(updatedSearchResults);
         } catch (error) {
             console.error('Error searching for ingredients:', error);
-            alert('Failed to search for ingredients.');
         }
     };
 
@@ -161,7 +159,6 @@ const EditRecipe = () => {
             setCuisineSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
         } catch (error) {
             console.error('Error searching for cuisines:', error);
-            alert('Failed to search for cuisines.');
         }
     };
 
@@ -179,7 +176,6 @@ const EditRecipe = () => {
             setDietSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
         } catch (error) {
             console.error('Error searching for diets:', error);
-            alert('Failed to search for diets.');
         }
     };
 
@@ -708,7 +704,6 @@ const EditRecipe = () => {
         
         } catch (error) {
             console.error('Error updating recipe:', error);
-            alert('Failed to update recipe.');
         }
     };
 
