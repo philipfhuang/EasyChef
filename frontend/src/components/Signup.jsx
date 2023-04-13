@@ -15,7 +15,7 @@ export const Signup = () => {
         }
         const regex = /^\d{3}-\d{3}-\d{4}$/;
         if (!regex.test(phone)) {
-            return "Phone number is invalid";
+            return "Number must be in the format 123-456-7890";
         }
         return '';
     }
