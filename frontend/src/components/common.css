@@ -9,3 +9,7 @@
 .hoverScale:hover {
     transform: scale(1.05);
 }
+
+h4,p{
+    text-overflow: ellipsis;
+}

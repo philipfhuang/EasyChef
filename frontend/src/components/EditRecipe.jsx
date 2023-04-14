@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Input, Button, InputNumber, Select, Upload, List, Space, Row, Col } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Form, Input, Button, InputNumber, Upload, Space, Row, Col } from 'antd';
+import { PlusOutlined} from '@ant-design/icons';
 import './CreateRecipe.css';
 import {
     Image,
@@ -9,9 +9,7 @@ import {
     Rating,
     Typography,
     Divider,
-    Toast,
-    Avatar,
-    Empty, Pagination, BackTop
+    Toast
 } from '@douyinfe/semi-ui';
 
 import { useParams } from 'react-router-dom';
@@ -34,42 +32,18 @@ const EditRecipe = () => {
     const [diet, setDiet] = useState('');
     const [cuisine, setCuisine] = useState('');
     const [recipeId, setRecipeId] = useState(null);
-    const [ingredient, setIngredient] = useState('');
-    const [quantity, setQuantity] = useState('');
-    const [unit, setUnit] = useState('');
-    const [stepContent, setStepContent] = useState('');
-    const [stepImages, setStepImages] = useState([]);
-    const [stepVideos, setStepVideos] = useState([]);
-    const [stepId, setStepId] = useState(null);
-    const [stepImageFiles, setStepImageFiles] = useState([]);
-    const [stepVideoFiles, setStepVideoFiles] = useState([]);
+
     const [createdStepIds, setCreatedStepIds] = useState([]);
     const [unitSearchResults, setUnitSearchResults] = useState([]);
     const { id } = useParams();
 
     const {Text, Title, Paragraph} = Typography;
-    const {TextArea} = Form;
-    const topStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 30,
-        width: 30,
-        borderRadius: '100%',
-        backgroundColor: '#976332',
-        color: '#fff',
-        bottom: 100,
-    };
 
-
-
-  
 
     useEffect(() => {
         async function fetchRecipe() {
             try {
               const response = await axios.get(`http://127.0.0.1:8000/posts/recipe/${id}/`);
-              console.log(response.data)
               const recipe = response.data;
               setCreatedStepIds(recipe.steps.map(step => step.id));
               setRecipeId(recipe.id);
@@ -97,7 +71,6 @@ const EditRecipe = () => {
               setCoverFile(recipe.cover);
         
             } catch (error) {
-              console.error('Error fetching recipe:', error);
             }
           }
         
@@ -122,7 +95,6 @@ const EditRecipe = () => {
             updatedSearchResults[index] = Array.isArray(response.data.results) ? response.data.results : [];
             setUnitSearchResults(updatedSearchResults);
         } catch (error) {
-            console.error('Error searching for units:', error);
         }
     };
 
@@ -141,7 +113,6 @@ const EditRecipe = () => {
             updatedSearchResults[index] = Array.isArray(response.data.results) ? response.data.results : [];
             setIngredientSearchResults(updatedSearchResults);
         } catch (error) {
-            console.error('Error searching for ingredients:', error);
         }
     };
 
@@ -158,7 +129,6 @@ const EditRecipe = () => {
             const response = await axios.get(`http://127.0.0.1:8000/search/filter/?type=cuisine&content=${query}`, config);
             setCuisineSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
         } catch (error) {
-            console.error('Error searching for cuisines:', error);
         }
     };
 
@@ -175,14 +145,12 @@ const EditRecipe = () => {
             const response = await axios.get(`http://127.0.0.1:8000/search/filter/?type=diet&content=${query}`, config);
             setDietSearchResults(Array.isArray(response.data.results) ? response.data.results : []);
         } catch (error) {
-            console.error('Error searching for diets:', error);
         }
     };
 
     const addStepVideo = async (stepId, videoFiles) => {
         const newVideoFiles = videoFiles.map((video) => video.file);
         if (!stepId || !newVideoFiles || newVideoFiles.length === 0) {
-            console.error(`Error adding videos to step ${stepId}: No step ID or video files.`);
             return;
         }
 
@@ -201,9 +169,7 @@ const EditRecipe = () => {
 
             try {
                 await axios.post('http://127.0.0.1:8000/posts/stepVideo/', formData, config);
-                console.log(`Video added to step ${stepId} successfully!`);
             } catch (error) {
-                console.error(`Error adding video to step ${stepId}:`, error);
             }
         }
     };
@@ -224,7 +190,6 @@ const EditRecipe = () => {
 
         const newImageFiles = imageFiles.map((image) => image.file);
         if (!stepId || !newImageFiles || newImageFiles.length === 0) {
-            console.error(`Error adding images to step ${stepId}: No step ID or image files.`);
             return;
         }
     
@@ -243,9 +208,7 @@ const EditRecipe = () => {
     
             try {
                 await axios.post('http://127.0.0.1:8000/posts/stepImage/', formData, config);
-                console.log(`Image added to step ${stepId} successfully!`);
             } catch (error) {
-                console.error(`Error adding image to step ${stepId}:`, error);
             }
         }
     
@@ -271,7 +234,6 @@ const EditRecipe = () => {
         try {
             await axios.patch(`http://127.0.0.1:8000/posts/recipeUpdate/`, formData, config);
         } catch (error) {
-            console.error('Error updating cover image:', error);
         }
     };
     
@@ -301,7 +263,6 @@ const EditRecipe = () => {
             diet_name
           }, config);
         } catch (error) {
-          console.error("Error adding diet to API:", error);
         }
     };
 
@@ -319,7 +280,6 @@ const EditRecipe = () => {
         try {
           await axios.delete("http://127.0.0.1:8000/posts/recipeDietDelete/", config);
         } catch (error) {
-          console.error("Error deleting diet from API:", error);
         }
     };
 
@@ -348,7 +308,6 @@ const EditRecipe = () => {
             cuisine_name,
           }, config);
         } catch (error) {
-          console.error("Error adding cuisine to API:", error);
         }
     };
 
@@ -367,7 +326,6 @@ const EditRecipe = () => {
         try {
           await axios.delete("http://127.0.0.1:8000/posts/recipeCuisineDelete/", config);
         } catch (error) {
-          console.error("Error deleting cuisine from API:", error);
         }
     };
 
@@ -379,6 +337,7 @@ const EditRecipe = () => {
             await updateIngredient(ingredientQuantity);
           }
         }
+        Toast.success("Ingredients saved successfully!");
     };
 
 
@@ -400,7 +359,6 @@ const EditRecipe = () => {
         try {
             await axios.post('http://127.0.0.1:8000/posts/ingredientQuantity/', data, config);
           } catch (error) {
-            console.error('Error creating ingredient:', error);
           }
     };
 
@@ -423,7 +381,6 @@ const EditRecipe = () => {
         try {
           await axios.patch('http://127.0.0.1:8000/posts/ingredientQuantityUpdate/', data, config);
         } catch (error) {
-          console.error('Error updating ingredient:', error);
         }
     };
 
@@ -444,7 +401,6 @@ const EditRecipe = () => {
           try {
             await axios.delete('http://127.0.0.1:8000/posts/ingredientQuantityDelete/', config);
           } catch (error) {
-            console.error('Error deleting ingredient:', error);
           }
         }
       
@@ -505,6 +461,7 @@ const EditRecipe = () => {
                 await addStepVideo(step.id, step.videos.filter((video) => video.id === null));
             }
         }
+        Toast.success("Step saved successfully!");
     };
 
     const createStep = async (step) => {
@@ -528,7 +485,6 @@ const EditRecipe = () => {
           await createStepImage(stepId, step.images);
           await createStepVideo(stepId, step.videos);
         } catch (error) {
-          console.error('Error creating step:', error);
         }
     };
 
@@ -553,31 +509,12 @@ const EditRecipe = () => {
           await createStepImage(stepId, step.images);
           await createStepVideo(stepId, step.videos);
         } catch (error) {
-          console.error('Error updating step:', error);
-        }
-    };
-
-    const deleteStep = async (stepId) => {
-        const config = {
-            headers: {
-              'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token')).access}`,
-            },
-            data: {
-              id: stepId,
-            },
-        };
-
-        try {
-          await axios.post('http://127.0.0.1:8000/posts/stepDelete/', config);
-        } catch (error) {
-          console.error('Error deleting step:', error);
         }
     };
 
     const createStepImage = async (stepId, imageFiles) => {
         // Reuse addStepImage() function from previous code
         if (!stepId || !imageFiles || imageFiles.length === 0) {
-            console.error(`Error adding images to step ${stepId}: No step ID or image files.`);
             return;
         }
     
@@ -596,9 +533,7 @@ const EditRecipe = () => {
     
             try {
                 await axios.post('http://127.0.0.1:8000/posts/stepImage/', formData, config);
-                console.log(`Image added to step ${stepId} successfully!`);
             } catch (error) {
-                console.error(`Error adding image to step ${stepId}:`, error);
             }
         }
     
@@ -618,14 +553,12 @@ const EditRecipe = () => {
         try {
           await axios.delete('http://127.0.0.1:8000/posts/stepImageDelete/', config);
         } catch (error) {
-          console.error('Error deleting step image:', error);
         }
     };
 
     const createStepVideo = async (stepId, videoFiles) => {
         // Reuse addStepVideo() function from previous code
         if (!stepId || !videoFiles || videoFiles.length === 0) {
-            console.error(`Error adding videos to step ${stepId}: No step ID or video files.`);
             return;
         }
 
@@ -644,9 +577,7 @@ const EditRecipe = () => {
 
             try {
                 await axios.post('http://127.0.0.1:8000/posts/stepVideo/', formData, config);
-                console.log(`Video added to step ${stepId} successfully!`);
             } catch (error) {
-                console.error(`Error adding video to step ${stepId}:`, error);
             }
         }
 
@@ -665,12 +596,11 @@ const EditRecipe = () => {
         try {
           await axios.delete('http://127.0.0.1:8000/posts/stepVideoDelete/', config);
         } catch (error) {
-          console.error('Error deleting step video:', error);
         }
       };
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async () => {
     
         const updateConfig = {
             headers: {
@@ -689,13 +619,10 @@ const EditRecipe = () => {
             formData.append('cover', coverFile);
         }
 
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
-        }
     
         try {
             await axios.patch(`http://127.0.0.1:8000/posts/recipeUpdate/`, formData, updateConfig);
-            alert('Recipe updated successfully!');
+            Toast.success("Recipe updated successfully!");
         
             // Call updateCoverAndAddStepImages after successfully creating the recipe
             await updateCoverAndAddStepImages(recipeId, createdStepIds, steps);
@@ -703,7 +630,6 @@ const EditRecipe = () => {
             window.location.reload();
         
         } catch (error) {
-            console.error('Error updating recipe:', error);
         }
     };
 
@@ -1045,7 +971,6 @@ const EditRecipe = () => {
                                     type="file"
                                     onChange={(e) => {
                                         handleImageInputChange(stepIndex, imageIndex, e.target.files[0]);
-                                        console.log('Image file for step', stepIndex, 'image', imageIndex, 'set to:', e.target.files[0]);
                                     }}
                                     />
                                 </label>
@@ -1074,7 +999,6 @@ const EditRecipe = () => {
                                         type="file"
                                         onChange={(e) => {
                                             handleVideoInputChange(stepIndex, videoIndex, e.target.files[0], 'videos');
-                                            console.log('Video file for step', stepIndex, 'video', videoIndex, 'set to:', e.target.files[0]);
                                         }}
                                         />
                                     </label>

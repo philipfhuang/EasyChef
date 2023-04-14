@@ -67,13 +67,10 @@ const Recipe = () => {
                 setRecipe(response.data);
 
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                console.log(storedUser);
 
                 if (uid == response.data.creator.id) {
                     setEditMode(true);
                 }
-                
-                console.log(editMode);
 
                 if (storedUser.liked_recipes !== undefined) {
                     if (storedUser.liked_recipes.some(recipe => recipe.id === response.data.id)) {
@@ -88,7 +85,6 @@ const Recipe = () => {
                 }
 
             } catch (error) {
-                console.error('Error fetching recipe:', error);
             }
             await fetchComments(`http://127.0.0.1:8000/comments/fromRecipe/${id}/`);
         }
@@ -104,7 +100,6 @@ const Recipe = () => {
             setCommentCount(response.data.count);
             setComments(response.data.results);
         } catch (error) {
-            console.error('Error fetching comments:', error);
         }
     };
     const handleLike = async () => {
@@ -119,8 +114,6 @@ const Recipe = () => {
             const likeData = {
                 recipeid: recipe.id,
             };
-
-            console.log(accessToken);
 
             if (!liked) {
                 await axios.post('http://127.0.0.1:8000/accounts/like/', likeData, config);
@@ -149,7 +142,6 @@ const Recipe = () => {
             }
             setLiked(!liked);
         } catch (error) {
-            console.error('Error liking or unliking:', error);
             Toast.error({
                 content: 'Error liking or unliking',
                 duration: 3,
@@ -202,7 +194,6 @@ const Recipe = () => {
             }
             setFavorited(!favorited);
         } catch (error) {
-            console.error('Error favoriting or unfavoriting:', error);
             Toast.error({
                 content: 'Error favoriting or unfavoriting',
                 duration: 3,
@@ -233,9 +224,8 @@ const Recipe = () => {
                     duration: 3,
                 });
             } catch (error) {
-                console.error('Error adding to shopping list:', error);
                 Toast.error({
-                    content: 'Error adding to shopping list',
+                    content: 'You have already added this ingredient to your shopping list!',
                     duration: 3,
                 });
             }
@@ -288,7 +278,6 @@ const Recipe = () => {
                 duration: 3,
             });
         } catch (error) {
-            console.error('Error adding comment:', error);
             Toast.error({
                 content: 'Error adding comment',
                 duration: 3,
@@ -311,7 +300,6 @@ const Recipe = () => {
             });
 
         } catch (error) {
-            console.error('Error deleting comment:', error);
 
         }
 

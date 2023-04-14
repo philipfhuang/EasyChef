@@ -3,7 +3,9 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {List, Rating, Spin, BackTop, Typography, Empty} from '@douyinfe/semi-ui';
 import {IconArrowUp} from "@douyinfe/semi-icons";
 import axios from "axios";
+
 import IllustrationNoContent from "./IllustrationNoContent.tsx";
+import './common.css'
 
 const ContentList = (props) => {
     const height = window.location.href.includes('explore') ? "60vh" : "100%";
@@ -105,8 +107,8 @@ const ContentList = (props) => {
                                    className='hoverPointer hoverScale' onClick={() => toRecipe(item.id)}>
                             <div style={{backgroundImage: `url(${item.cover})`, backgroundSize: 'cover', height: '70%', width: '100%'}}/>
                             <div style={{height: '30%', width: '100%', marginTop: 2, marginRight:10, marginLeft:10, position:'relative'}}>
-                                <Title heading={4}>{item.title}</Title>
-                                <Paragraph>{item.description}</Paragraph>
+                                <Title ellipsis={{ showTooltip: true }} style={{textOverflow:"ellipsis", height:28}} heading={4}>{item.title}</Title>
+                                <Paragraph ellipsis={{ showTooltip: true }} style={{width:"40%",textOverflow:"ellipsis", height:20}}>{item.description}</Paragraph>
                                 <div style={{display: 'flex', justifyContent: 'space-between', position:'absolute', bottom:8, width:'100%'}}>
                                     <Paragraph style={{color:'#727477'}}>{item.cooking_time} mins</Paragraph>
                                     <Rating allowHalf defaultValue={item.avg_rating} disabled size={15}/>

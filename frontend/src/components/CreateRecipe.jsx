@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Form, Input, Button, InputNumber, Select, Upload, List, Space, Row, Col } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Form, Input, Button, InputNumber, Upload, Space, Row, Col } from 'antd';
+import { PlusOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import './CreateRecipe.css'
 
@@ -117,7 +117,6 @@ const CreateRecipe = () => {
 
             try {
                 await axios.post('http://127.0.0.1:8000/posts/stepVideo/', formData, config);
-                console.log(`Video added to step ${stepId} successfully!`);
             } catch (error) {
                 console.error(`Error adding video to step ${stepId}:`, error);
             }
@@ -158,7 +157,6 @@ const CreateRecipe = () => {
     
             try {
                 await axios.post('http://127.0.0.1:8000/posts/stepImage/', formData, config);
-                console.log(`Image added to step ${stepId} successfully!`);
             } catch (error) {
                 console.error(`Error adding image to step ${stepId}:`, error);
             }
@@ -247,7 +245,7 @@ const CreateRecipe = () => {
         setSteps(updatedSteps);
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async () => {
     
         const storedToken = localStorage.getItem('token');
         const accessToken = JSON.parse(storedToken).access;
@@ -266,13 +264,11 @@ const CreateRecipe = () => {
             cooking_time: parseInt(cookingTime)
         };
 
-        console.log(recipeData)
     
         try {
             const response = await axios.post('http://127.0.0.1:8000/posts/recipe/', recipeData, config);
             const recipeId = response.data.id; // Extract the id from the returned JSON
             const createdStepIds = response.data.steps.map(step => step.id); // Extract step ids from the returned JSON
-            console.log(createdStepIds)
         
             // Call updateCoverAndAddStepImages after successfully creating the recipe
             await updateCoverAndAddStepImages(recipeId, createdStepIds, steps);
@@ -516,7 +512,6 @@ const CreateRecipe = () => {
                   type="file"
                   onChange={(e) => {
                     handleImageInputChange(stepIndex, imageIndex, e.target.files[0]);
-                    console.log('Image file for step', stepIndex, 'image', imageIndex, 'set to:', e.target.files[0]);
                   }}
                 />
               </label>
@@ -544,7 +539,6 @@ const CreateRecipe = () => {
                   type="file"
                   onChange={(e) => {
                     handleVideoInputChange(stepIndex, videoIndex, e.target.files[0], 'videos');
-                    console.log('Video file for step', stepIndex, 'video', videoIndex, 'set to:', e.target.files[0]);
                   }}
                 />
               </label>

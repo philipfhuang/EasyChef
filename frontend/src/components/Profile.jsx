@@ -45,7 +45,7 @@ const Profile = () => {
                     <ContentList content="favourited" />
                 </TabPane>
                 <TabPane tab="Interacted" itemKey="3">
-                    <ContentList content="interated" />
+                    <ContentList content="interacted" />
                 </TabPane>
             </Tabs>
         </div>
