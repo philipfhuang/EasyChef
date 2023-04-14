@@ -25,9 +25,9 @@ class SearchView(ListAPIView):
         if search_param is not None:
             recipes = Recipe.objects.filter(Q(title__icontains=search_param) |
                                         Q(creator__username__icontains=search_param) |
-                                        Q(cuisines__cuisine__name__icontains=search_param))
+                                        Q(cuisines__cuisine__name__icontains=search_param)).distinct()
         else:
-            recipes = Recipe.objects.all()
+            recipes = Recipe.objects.all().distinct()
         cooktime = self.request.GET.get('cooktime')
         ingredients = self.request.GET.get('ingredient')
         diets = self.request.GET.get('diet')
