@@ -28,7 +28,6 @@ class SearchView(ListAPIView):
                                         Q(cuisines__cuisine__name__icontains=search_param))
         else:
             recipes = Recipe.objects.all()
-        print(recipes)
         cooktime = self.request.GET.get('cooktime')
         ingredients = self.request.GET.get('ingredient')
         diets = self.request.GET.get('diet')

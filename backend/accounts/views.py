@@ -1,8 +1,5 @@
 from django.db.models import Q
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.views import View
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, \
     UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -105,7 +102,6 @@ class FavouriteRecipeListView(ListAPIView):
 
     def get_queryset(self):
         user = self.kwargs.get('uid')
-        print(user)
         return Recipe.objects.filter(favorites__userid=user)
 
 class InteractedRecipeListView(ListAPIView):

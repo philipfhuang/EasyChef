@@ -22,5 +22,5 @@ urlpatterns = [
     path('unfavor/', UnfavorView.as_view()),
     path('created/<int:uid>/', CreatedRecipeListView.as_view()),
     path('favourited/<int:uid>/', FavouriteRecipeListView.as_view()),
-    path('interated/<int:uid>/', InteractedRecipeListView.as_view()),
+    path('interacted/<int:uid>/', InteractedRecipeListView.as_view()),
 ]
