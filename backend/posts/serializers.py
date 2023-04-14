@@ -60,7 +60,7 @@ class IngredientQuantitySerializer(serializers.ModelSerializer):
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
     ingredient = IngredientSerializer(read_only=True)
     unit = UnitSerializer(read_only=True)
-    quantity = serializers.IntegerField()
+    quantity = serializers.FloatField()
 
     ingredient_name = serializers.CharField(write_only=True)
     unit_name = serializers.CharField(write_only=True)
