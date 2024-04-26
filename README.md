@@ -30,7 +30,7 @@ Easy Chef is a social media platform designed for users to share and discover re
 
 To set up Easy Chef on your local machine, follow these steps:
 
-1. Clone the repository: `git clone <repository-url>`
+1. Clone the repository: `git clone https://github.com/philipfhuang/EasyChef.git`
 2. Navigate to the frontend directory: `cd frontend`
 3. Install frontend dependencies: `npm install`
 4. Start the frontend server: `npm start`
