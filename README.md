@@ -21,10 +21,10 @@ Easy Chef is a social media platform designed for users to share and discover re
 - **Backend:**
   - **Django Rest Framework:** A powerful and flexible toolkit for building Web APIs in Django.
   - **Django ORM:** Object-Relational Mapping for interacting with the database.
-  - **Django Authentication:** Built-in authentication system for user management and security.
+  - **Django REST Framework Simple JWT:** A JWT authentication for the Django REST Framework.
   
 - **Database:**
-  - **MySQL:** Used to store user data, recipes, comments, and other application-related information.
+  - **SQLite:** Store user data, recipes, comments, and other application-related information.
 
 ## Getting Started
 
